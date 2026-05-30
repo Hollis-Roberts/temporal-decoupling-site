@@ -1,0 +1,18 @@
+backend:
+  name: git-gateway
+  branch: main
+media_folder: "public/assets"
+public_folder: "/assets"
+collections:
+  - name: "framework"
+    label: "Framework Sections"
+    folder: "src/content/framework"
+    create: true
+    slug: "{{slug}}"
+    format: "frontmatter"
+    fields:
+      - {label: "Section Number", name: "sectionNumber", widget: "number"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Subtitle", name: "subtitle", widget: "string"}
+      - {label: "Date", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "Content", name: "body", widget: "markdown"}

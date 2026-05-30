@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('framework');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+---
+
+<BaseLayout title={post.data.title} description={post.data.subtitle}>
+  <Header />
+  <article class="container" style="max-width: 800px; margin: 0 auto; padding: 4rem 1.5rem;">
+    <span style="color: var(--color-secondary); font-weight: 600; font-size: 0.875rem;">
+      STEP {post.data.sectionNumber.toString().padStart(2, '0')}
+    </span>
+    <h1 style="margin: 0.5rem 0 0.25rem 0;">{post.data.title}</h1>
+    <p style="color: var(--color-muted); margin-bottom: 2rem; font-style: italic;">{post.data.subtitle}</p>
+    
+    <!-- Render markdown body directly -->
+    <div class="prose" set:html={post.body} />
+    
+    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+      <a href="/framework/" class="btn">← Back to Framework</a>
+    </div>
+  </article>
+</BaseLayout>

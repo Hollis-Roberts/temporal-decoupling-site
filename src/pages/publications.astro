@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+---
+<BaseLayout title="Publications" description="Zenodo DOIs, GitHub repository, and citation information for the Temporal Decoupling framework.">
+  <Header />
+  <section class="container">
+    <h1>Publications</h1>
+    
+    <div style="margin: 2rem 0;">
+      <h2>Core Framework</h2>
+      <div style="background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; margin: 1rem 0;">
+        <h3 style="margin-top: 0;">Temporal Decoupling v6</h3>
+        <p><strong>Toward a Unified Theory of Time, Gravity, and Quantum Mechanics</strong></p>
+        <p style="color: var(--color-muted); margin: 0.5rem 0;">Hollis Roberts · May 2026</p>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+          <a href="https://doi.org/10.5281/zenodo.19802599" target="_blank" class="btn">📄 Zenodo: 10.5281/zenodo.19802599</a>
+          <a href="https://github.com/Hollis-Roberts/aett-tsc-roberts-vacuum-model" target="_blank" class="btn" style="background: #24292f;">💻 GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin: 2rem 0;">
+      <h2>Companion Technical Note</h2>
+      <div style="background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; margin: 1rem 0;">
+        <h3 style="margin-top: 0;">Pre-Temporal Worldlines, Chronometric Coupling, and the Geometric Origin of the Particle Spectrum</h3>
+        <p style="color: var(--color-muted); margin: 0.5rem 0;">Hollis Roberts · May 2026</p>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+          <a href="https://doi.org/10.5281/zenodo.20437023" target="_blank" class="btn">📐 Zenodo: 10.5281/zenodo.20437023</a>
+          <a href="https://doi.org/10.5281/zenodo.20437022" target="_blank" class="btn" style="background: var(--color-accent);">🔗 Concept DOI</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin: 2rem 0;">
+      <h2>Citation (CITATION.cff)</h2>
+      <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.875rem;"><code>cff-version: 1.2.0
+title: "Temporal Decoupling v6: Toward a Unified Theory of Time, Gravity, and Quantum Mechanics"
+authors:
+  - family-names: Roberts
+    given-names: Hollis
+    orcid: https://orcid.org/0009-0009-3168-5560
+doi: 10.5281/zenodo.19802599
+license: CC-BY-4.0</code></pre>
+    </div>
+
+    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+      <a href="/" class="btn">← Back to Home</a>
+    </div>
+  </section>
+</BaseLayout>
