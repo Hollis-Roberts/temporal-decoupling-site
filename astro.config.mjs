@@ -1,13 +1,11 @@
 import { defineConfig } from 'astro/config';
-import netlify from '@astrojs/netlify';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 export default defineConfig({
-  // ✅ CRITICAL: Explicitly tell Astro this is a static site
+  // ✅ CRITICAL: Pure static build - no server adapter needed
   output: 'static',
   
-  integrations: [netlify()],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
