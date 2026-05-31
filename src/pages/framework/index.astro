@@ -1,13 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
 
 // Load all framework sections
 const sections = await getCollection('framework');
 ---
 <BaseLayout title="Framework" description="Step-by-step breakdown of the Temporal Decoupling mechanics.">
-  <Header />
   <section class="container">
     <h1>The Framework</h1>
     <p style="margin-bottom: 2rem;">Eight foundational steps. Click any section to explore the geometry, equations, and falsifiable predictions.</p>

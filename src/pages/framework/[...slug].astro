@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
 
 export const prerender = true;
 
@@ -17,7 +16,6 @@ const { post } = Astro.props;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.subtitle}>
-  <Header />
   <article class="container" style="max-width: 800px; margin: 0 auto; padding: 4rem 1.5rem;">
     <span style="color: var(--color-secondary); font-weight: 600; font-size: 0.875rem;">
       STEP {post.data.sectionNumber.toString().padStart(2, '0')}
