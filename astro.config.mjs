@@ -1,13 +1,12 @@
 import { defineConfig } from 'astro/config';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
 
 export default defineConfig({
-  // ✅ Pure static build - no server adapter needed
   output: 'static',
-  
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, remarkGfm],
     rehypePlugins: [rehypeKatex],
   },
 });
