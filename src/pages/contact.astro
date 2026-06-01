@@ -6,29 +6,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div style="max-width: 760px; margin: 0 auto; background: #fff; padding: 2rem; border-radius: 16px; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);">
       <h1>Contact</h1>
       <p style="margin-bottom: 1.5rem; color: #475569;">Send a message to discuss the Temporal Decoupling framework, collaborations, or questions.</p>
-      <form 
-  action="https://formspree.io/f/YOUR_FORM_ID" 
-  method="POST"
->
-  <!-- Formspree auto-handles spam, so honeypot is optional -->
-  
-  <label>
-    Name:
-    <input type="text" name="name" required placeholder="Your name" />
-  </label>
-  
-  <label>
-    Email:
-    <input type="email" name="email" required placeholder="your@email.com" />
-  </label>
-  
-  <label>
-    Message:
-    <textarea name="message" required placeholder="Your message..." rows="5"></textarea>
-  </label>
-  
-  <button type="submit" class="btn">Send Message</button>
-</form>
+      
+      <form action="https://formspree.io/f/xbdbvdzw" method="POST">
+        <label>
+          Name:
+          <input type="text" name="name" required placeholder="Your name" />
+        </label>
+        
+        <label>
+          Email:
+          <input type="email" name="email" required placeholder="your@email.com" />
+        </label>
+        
+        <label>
+          Message:
+          <textarea name="message" required placeholder="Your message..." rows="5"></textarea>
+        </label>
+        
+        <button type="submit" class="btn">Send Message</button>
+      </form>
     </div>
   </section>
 </BaseLayout>
