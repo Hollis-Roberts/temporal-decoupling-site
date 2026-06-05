@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Visual Models" description="Mechanical visualizations mapping temporal flow, the CMB boundary, and universal evolution.">
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem;">
+    
+    <!-- Header Section -->
+    <h1>Visual Models</h1>
+    <p class="lead">
+      Mechanical visualizations mapping temporal flow, the CMB boundary, and universal evolution. 
+      These diagrams and interactive models illustrate the substrate mechanics of the AETT TSC Roberts Vacuum Model 
+      without introducing new theoretical claims.
+    </p>
+    
+    <!-- Models Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+      
+      <!-- Model 1: CMB Boundary -->
+      <a href="/visual-models/cmb-boundary/" style="text-decoration: none; color: inherit;">
+        <div class="model-card">
+          <div class="card-icon">🌌</div>
+          <h3>CMB as Temporal Origin (T=0)</h3>
+          <p>Why measurable time begins at recombination, and the nature of the pre-temporal void beyond the observable boundary.</p>
+          <span class="card-link">Explore Model →</span>
+        </div>
+      </a>
+
+      <!-- Model 2: Pulse Propulsion -->
+      <a href="/visual-models/pulse-propulsion/" style="text-decoration: none; color: inherit;">
+        <div class="model-card">
+          <div class="card-icon">🚀</div>
+          <h3>Temporal Pulse Propulsion</h3>
+          <p>How pulsing acceleration resets temporal drag, allowing a vessel to decouple from the timeline and step past the light-speed barrier.</p>
+          <span class="card-link">Explore Model →</span>
+        </div>
+      </a>
+
+      <!-- Model 3: Quantum Entanglement (Placeholder) -->
+      <a href="/visual-models/quantum-entanglement/" style="text-decoration: none; color: inherit; opacity: 0.7;">
+        <div class="model-card">
+          <div class="card-icon">⚛️</div>
+          <h3>Flowline Bisection & Entanglement</h3>
+          <p>Visualizing quantum measurement as a cut in the temporal flowline, creating mirror-state entry and exit points. <em>(Coming Soon)</em></p>
+          <span class="card-link">Explore Model →</span>
+        </div>
+      </a>
+
+      <!-- Model 4: Temporal Bulge / Gravity (Placeholder) -->
+      <a href="/visual-models/temporal-bulge/" style="text-decoration: none; color: inherit; opacity: 0.7;">
+        <div class="model-card">
+          <div class="card-icon">🕳️</div>
+          <h3>The Temporal Bulge (Gravity)</h3>
+          <p>Mass obstructing temporal flow, creating a forward-facing resistance wake instead of a traditional spacetime curvature well. <em>(Coming Soon)</em></p>
+          <span class="card-link">Explore Model →</span>
+        </div>
+      </a>
+
+    </div>
+  </article>
+
+  <!-- Card Styling (Scoped to this page) -->
+  <style>
+    .model-card {
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .model-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .model-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      font-size: 1.25rem;
+    }
+
+    .model-card p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      flex-grow: 1; /* Pushes the link to the bottom */
+      line-height: 1.6;
+    }
+
+    .card-link {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .model-card:hover .card-link {
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>

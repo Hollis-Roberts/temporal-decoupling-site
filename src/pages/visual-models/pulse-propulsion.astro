@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Pulse Propulsion" description="How to reach light speed using Temporal Decoupling.">
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 900px; margin: 0 auto;">
+    <h1>Temporal Pulse Propulsion</h1>
+    <p class="lead">Standard physics says the energy required to reach light speed is infinite. <strong>Temporal Decoupling</strong> says the energy is required to fight <em>time</em>. By pulsing our acceleration, we can reset that friction.</p>
+
+    <!-- Interactive Simulation -->
+    <div style="background: #0f172a; padding: 2rem; border-radius: 16px; margin: 2rem 0; text-align: center;">
+      <canvas id="pulseCanvas" style="width: 100%; max-width: 600px; height: 300px; border: 1px solid #334155; border-radius: 8px;"></canvas>
+      <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
+        <button id="btnStandard" style="padding: 0.5rem 1rem; cursor: pointer;">Standard Drive</button>
+        <button id="btnPulse" style="padding: 0.5rem 1rem; background: #2563EB; color: white; border: none; cursor: pointer; border-radius: 4px;">Pulse Drive (Theory)</button>
+        <button id="btnReset" style="padding: 0.5rem 1rem; cursor: pointer;">Reset</button>
+      </div>
+      <p id="statusText" style="color: #94a3b8; margin-top: 1rem; font-size: 0.9rem;">Select a drive mode to compare efficiency.</p>
+    </div>
+
+    <h2>The Theory: Temporal Gearing</h2>
+    <p>When a ship accelerates, it pushes against the "tide" of the timeline. As speed increases, this resistance (Temporal Drag) grows exponentially.</p>
+    <ul>
+      <li><strong>Standard Drive:</strong> Continuous acceleration fights the drag constantly. The ship gets stuck at 99% light speed because the energy required becomes infinite.</li>
+      <li><strong>Pulse Drive:</strong> Accelerate → Stop (Coast) → Accelerate. During the "Coast" phase, the ship decouples from the timeline flow. Resistance drops to zero. The next pulse starts fresh, allowing the ship to "step" past the light barrier.</li>
+    </ul>
+  </article>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('pulseCanvas');
+      const ctx = canvas.getContext('2d');
+      const btnStandard = document.getElementById('btnStandard');
+      const btnPulse = document.getElementById('btnPulse');
+      const btnReset = document.getElementById('btnReset');
+      const statusText = document.getElementById('statusText');
+
+      // Handle High DPI screens
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      let animationId;
+      let mode = 'none'; // 'standard' or 'pulse'
+      let shipX = 50;
+      let velocity = 0;
+      let resistance = 0;
+      let time = 0;
+
+      const lightSpeedLimit = rect.width - 50;
+
+      function draw() {
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        
+        // Draw Timeline (The "Substrate")
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        
+        // Draw Grid
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        for(let i=0; i<rect.width; i+=40) {
+          ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, rect.height); ctx.stroke();
+        }
+
+        // Draw Light Speed Barrier (The Wall)
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(lightSpeedLimit, 0);
+        ctx.lineTo(lightSpeedLimit, rect.height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('LIGHT SPEED BARRIER', lightSpeedLimit + 10, 20);
+
+        // Draw Ship
+        if (mode !== 'none') {
+          ctx.fillStyle = '#3b82f6';
+          ctx.beginPath();
+          ctx.arc(shipX, rect.height / 2, 10, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Draw Exhaust
+          if (velocity > 0) {
+             ctx.fillStyle = mode === 'pulse' && velocity === 0 ? 'transparent' : '#f59e0b';
+             ctx.fillRect(shipX - 15, rect.height/2 - 3, 10, 6);
+          }
+        }
+
+        // Draw Graph (Resistance)
+        ctx.beginPath();
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2;
+        for (let x = 0; x < rect.width; x++) {
+          let y = rect.height - (x / rect.width) * (rect.height * 0.8);
+          // Curve the line to simulate resistance increasing
+          if (x > rect.width * 0.6) y += Math.pow((x - rect.width*0.6)/100, 2) * 50;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        
+        ctx.fillStyle = '#10b981';
+        ctx.fillText('TEMPORAL RESISTANCE (Drag)', 10, rect.height - 10);
+      }
+
+      function update() {
+        if (mode === 'standard') {
+          if (shipX < lightSpeedLimit) {
+            // Standard: Acceleration fights drag. Drag gets huge near light speed.
+            let drag = Math.pow(velocity / 2, 3); 
+            let thrust = 0.5;
+            if (drag < thrust) {
+               velocity += thrust - drag;
+               shipX += velocity;
+            } else {
+               statusText.innerText = "Standard Drive: Stuck at 99% Light Speed. Resistance is too high.";
+               statusText.style.color = "#ef4444";
+            }
+          }
+        } else if (mode === 'pulse') {
+           // Pulse: Accelerate, then Coast (Drag = 0)
+           // We simulate a cycle: 0-100px (Push), 100-150px (Coast)
+           let cyclePos = shipX % 150;
+           
+           if (cyclePos < 100) {
+             // Pushing
+             let drag = Math.pow(velocity / 3, 2); // Lower drag coefficient due to pulsing
+             let thrust = 1.0;
+             if (drag < thrust) {
+                velocity += thrust - drag;
+                shipX += velocity;
+                statusText.innerText = "Pulse Drive: Accelerating. Drag is managed.";
+                statusText.style.color = "#10b981";
+             }
+           } else {
+             // Coasting (Decoupled)
+             velocity = 0; // Reset velocity visually for the cycle
+             shipX += 2; // Drift
+             statusText.innerText = "Pulse Drive: Coasting (Decoupled). Resistance reset to 0.";
+             statusText.style.color = "#3b82f6";
+           }
+        }
+
+        if (shipX > lightSpeedLimit) {
+           statusText.innerText = "SUCCESS: Pulse Drive broke the Light Speed Barrier!";
+           statusText.style.color = "#f59e0b";
+           mode = 'none'; // Stop
+        }
+
+        draw();
+        if (mode !== 'none') {
+          animationId = requestAnimationFrame(update);
+        }
+      }
+
+      btnStandard.addEventListener('click', () => {
+        reset();
+        mode = 'standard';
+        update();
+      });
+
+      btnPulse.addEventListener('click', () => {
+        reset();
+        mode = 'pulse';
+        update();
+      });
+
+      btnReset.addEventListener('click', reset);
+
+      function reset() {
+        mode = 'none';
+        shipX = 50;
+        velocity = 0;
+        statusText.innerText = "Select a drive mode.";
+        statusText.style.color = "#94a3b8";
+        draw();
+        cancelAnimationFrame(animationId);
+      }
+
+      draw(); // Initial draw
+    });
+  </script>
+</BaseLayout>
