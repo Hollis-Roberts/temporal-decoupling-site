@@ -8,13 +8,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
     <!-- Interactive Simulation -->
     <div style="background: #0f172a; padding: 2rem; border-radius: 16px; margin: 2rem 0; text-align: center;">
-      <canvas id="pulseCanvas" style="width: 100%; max-width: 600px; height: 300px; border: 1px solid #334155; border-radius: 8px;"></canvas>
-      <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
-        <button id="btnStandard" style="padding: 0.5rem 1rem; cursor: pointer;">Standard Drive</button>
+      
+      <!-- FIX 1 & 2: display: block ensures width: 100% calculates correctly on all devices -->
+      <canvas id="pulseCanvas" style="display: block; width: 100%; max-width: 600px; height: 300px; border: 1px solid #334155; border-radius: 8px; margin: 0 auto;"></canvas>
+      
+      <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button id="btnStandard" style="padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">Standard Drive</button>
         <button id="btnPulse" style="padding: 0.5rem 1rem; background: #2563EB; color: white; border: none; cursor: pointer; border-radius: 4px;">Pulse Drive (Theory)</button>
-        <button id="btnReset" style="padding: 0.5rem 1rem; cursor: pointer;">Reset</button>
+        <button id="btnReset" style="padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">Reset</button>
       </div>
-      <p id="statusText" style="color: #94a3b8; margin-top: 1rem; font-size: 0.9rem;">Select a drive mode to compare efficiency.</p>
+      <p id="statusText" style="color: #94a3b8; margin-top: 1rem; font-size: 0.9rem; min-height: 1.5em;">Select a drive mode to compare efficiency.</p>
     </div>
 
     <h2>The Theory: Temporal Gearing</h2>
@@ -25,32 +28,39 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     </ul>
   </article>
 
-  <script>
+  <!-- FIX 3: is:inline prevents Astro's production bundler from altering the script execution -->
+  <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
       const canvas = document.getElementById('pulseCanvas');
+      if (!canvas) return; // Safety check
+      
       const ctx = canvas.getContext('2d');
       const btnStandard = document.getElementById('btnStandard');
       const btnPulse = document.getElementById('btnPulse');
       const btnReset = document.getElementById('btnReset');
       const statusText = document.getElementById('statusText');
 
-      // Handle High DPI screens
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
       let animationId;
       let mode = 'none'; // 'standard' or 'pulse'
       let shipX = 50;
       let velocity = 0;
-      let resistance = 0;
-      let time = 0;
 
-      const lightSpeedLimit = rect.width - 50;
+      // FIX 4: Dynamic resize handler keeps the canvas sharp on mobile rotation or desktop resize
+      function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        draw();
+      }
+
+      // Initial setup
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
 
       function draw() {
+        const rect = canvas.getBoundingClientRect();
         ctx.clearRect(0, 0, rect.width, rect.height);
         
         // Draw Timeline (The "Substrate")
@@ -60,9 +70,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         // Draw Grid
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 1;
-        for(let i=0; i<rect.width; i+=40) {
+        for(let i = 0; i < rect.width; i += 40) {
           ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, rect.height); ctx.stroke();
         }
+
+        const lightSpeedLimit = rect.width - 50;
 
         // Draw Light Speed Barrier (The Wall)
         ctx.strokeStyle = '#ef4444';
@@ -77,16 +89,36 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         ctx.font = '12px sans-serif';
         ctx.fillText('LIGHT SPEED BARRIER', lightSpeedLimit + 10, 20);
 
-        // Draw Ship
+        // Draw Ship and Temporal Bulge
         if (mode !== 'none') {
+          let isPushing = (mode === 'standard') || (mode === 'pulse' && (shipX % 150) < 100);
+          
+          // Visualize the Temporal Bulge (Time building up)
+          if (isPushing && velocity > 0) {
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.3)'; // Soft blue glow
+            ctx.beginPath();
+            ctx.ellipse(shipX + 15, rect.height / 2, 15, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Compressed flowlines in the bulge
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(shipX + 10, rect.height / 2 - 5);
+            ctx.lineTo(shipX + 25, rect.height / 2);
+            ctx.lineTo(shipX + 10, rect.height / 2 + 5);
+            ctx.stroke();
+          }
+
+          // The Ship
           ctx.fillStyle = '#3b82f6';
           ctx.beginPath();
           ctx.arc(shipX, rect.height / 2, 10, 0, Math.PI * 2);
           ctx.fill();
           
-          // Draw Exhaust
+          // Exhaust (only visible when pushing)
           if (velocity > 0) {
-             ctx.fillStyle = mode === 'pulse' && velocity === 0 ? 'transparent' : '#f59e0b';
+             ctx.fillStyle = isPushing ? '#f59e0b' : 'transparent';
              ctx.fillRect(shipX - 15, rect.height/2 - 3, 10, 6);
           }
         }
@@ -97,8 +129,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         ctx.lineWidth = 2;
         for (let x = 0; x < rect.width; x++) {
           let y = rect.height - (x / rect.width) * (rect.height * 0.8);
-          // Curve the line to simulate resistance increasing
-          if (x > rect.width * 0.6) y += Math.pow((x - rect.width*0.6)/100, 2) * 50;
+          if (x > rect.width * 0.6) y += Math.pow((x - rect.width * 0.6) / 100, 2) * 50;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -109,9 +140,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       }
 
       function update() {
+        const rect = canvas.getBoundingClientRect();
+        const lightSpeedLimit = rect.width - 50;
+
         if (mode === 'standard') {
           if (shipX < lightSpeedLimit) {
-            // Standard: Acceleration fights drag. Drag gets huge near light speed.
             let drag = Math.pow(velocity / 2, 3); 
             let thrust = 0.5;
             if (drag < thrust) {
@@ -123,13 +156,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             }
           }
         } else if (mode === 'pulse') {
-           // Pulse: Accelerate, then Coast (Drag = 0)
-           // We simulate a cycle: 0-100px (Push), 100-150px (Coast)
            let cyclePos = shipX % 150;
            
            if (cyclePos < 100) {
-             // Pushing
-             let drag = Math.pow(velocity / 3, 2); // Lower drag coefficient due to pulsing
+             // Pushing phase
+             let drag = Math.pow(velocity / 3, 2);
              let thrust = 1.0;
              if (drag < thrust) {
                 velocity += thrust - drag;
@@ -138,9 +169,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
                 statusText.style.color = "#10b981";
              }
            } else {
-             // Coasting (Decoupled)
-             velocity = 0; // Reset velocity visually for the cycle
-             shipX += 2; // Drift
+             // Coasting phase (Decoupled)
+             velocity = 0;
+             shipX += 2; // Drift forward
              statusText.innerText = "Pulse Drive: Coasting (Decoupled). Resistance reset to 0.";
              statusText.style.color = "#3b82f6";
            }
@@ -149,7 +180,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         if (shipX > lightSpeedLimit) {
            statusText.innerText = "SUCCESS: Pulse Drive broke the Light Speed Barrier!";
            statusText.style.color = "#f59e0b";
-           mode = 'none'; // Stop
+           mode = 'none';
         }
 
         draw();
@@ -181,8 +212,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         draw();
         cancelAnimationFrame(animationId);
       }
-
-      draw(); // Initial draw
     });
   </script>
 </BaseLayout>
