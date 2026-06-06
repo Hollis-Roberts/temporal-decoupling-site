@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Flowline Mechanics & Entanglement" description="How matter interacts with the temporal substrate to create resistance wakes and quantum correlations.">
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 900px; margin: 0 auto;">
+    
+    <h1>Flowline Mechanics &amp; The Entanglement Cut</h1>
+    <p class="lead">Flow lines are static, oriented, one-dimensional structures existing in the Timeless Sea. They possess no mass, charge, or spin until they intersect our moving timeline. What we perceive as motion, inertia, and quantum entanglement are all consequences of this single geometric interaction.</p>
+
+    <!-- YOUR GENERATED IMAGE -->
+    <figure style="margin: 3rem 0; text-align: center;">
+      <img src="/images/09-flowlines.jpg" alt="A searchlight beam representing the temporal direction, with an object casting a trailing shadow to represent temporal drag." style="width: 100%; max-width: 800px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.5);" />
+      <figcaption style="color: var(--accent); font-size: 0.95rem; margin-top: 1rem; font-weight: 600; letter-spacing: 0.02em;">
+        "Flowline mechanics: matter moving through temporal flow creates a resistance wake."
+      </figcaption>
+    </figure>
+
+    <h2>Part 1: The Searchlight Analogy &amp; Temporal Drag</h2>
+    <p>Imagine a searchlight beam cutting through dark space. The beam represents the directional flow of the timeline. When an object (mass) enters the beam, it interacts with the light. Because the object has mass, it resists the flow, casting a trailing shadow or "wake" behind it.</p>
+    
+    <p>In the Temporal Decoupling framework, this wake is <strong>temporal drag</strong>. As an object moves through the temporal substrate, it must continuously "re-couple" with the flow lines ahead of it. This interaction creates a localized resistance, which we experience as inertia.</p>
+
+    <h3>The Flipbook Universe &amp; Partial Coupling</h3>
+    <p>To understand how particles emerge from this, consider the "Flipbook Analogy":</p>
+    <ul style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">
+      <li><strong>The Thread (Flow line):</strong> A static drawing running across all pages of a book (the Timeless Sea).</li>
+      <li><strong>The Pages (Timeline):</strong> The moving sheets of paper sweeping past the thread.</li>
+      <li><strong>The Stickman (Particle):</strong> The intersection point seen at one specific frame.</li>
+    </ul>
+    
+    <!-- FIX: Changed < to &lt; so Astro doesn't think it's an HTML tag -->
+    <p>A standard quantum particle is <strong>partially coupled</strong> to our timeline ($\Gamma &lt; 1$). It is like a thread passing through a few pages of the flipbook. We only see the specific page we are looking at. If the particle were fully coupled ($\Gamma = 1$), the thread would be completely cut and trapped in our reality. Because it is only partially coupled, the rest of the flowline remains safely in the Timeless Sea.</p>
+
+    <hr style="border: 0; border-top: 1px solid var(--border); margin: 4rem 0;" />
+
+    <h2>Part 2: The Entanglement Cut (First-Person Perspective)</h2>
+    <p>Standard quantum mechanics describes entanglement as a mysterious non-local correlation between spatially separated particles. The Temporal Decoupling framework reinterprets this geometrically: entangled particles are not separate entities communicating across space, but <strong>two intersection points on the same pre-temporal flow line</strong>.</p>
+
+    <h3>Entry and Exit from the Observer's Perspective</h3>
+    <p>When a measurement occurs, it forces a "crease" in the timeline at that specific location, forcing <em>local</em> full coupling ($\Gamma \to 1$) so we can observe it. From our first-person perspective within the timeline, we perceive this single intersection as two distinct events:</p>
+    <ul style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">
+      <li><strong>Entry Point:</strong> Where the entangled particle <em>appears</em> in our timeline when measured.</li>
+      <li><strong>Exit Point:</strong> Where the particle <em>exits</em> our timeline, returning to the Timeless Sea.</li>
+    </ul>
+
+    <p>Crucially, the flowline itself is not destroyed. The "crease" only locks that specific page of the flipbook. The thread continues through the rest of the book in the TSC. This partial coupling is the mechanical reason why entanglement can persist even after one endpoint is measured.</p>
+
+    <h3>Opposite Spins as a Perspective Effect</h3>
+    <p>The observed opposite spins of entangled particles arise naturally because we are looking at the exact same oriented flow line from two different intersection points. From our first-person perspective, the geometry dictates that they appear as perfect mirror reflections of each other:</p>
+    
+    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--accent); margin: 1.5rem 0; font-size: 1.2rem; text-align: center;">
+      <span class="math-vector">S</span><sub>entry</sub> = -<span class="math-vector">S</span><sub>exit</sub>
+    </div>
+
+    <p>This is not "spooky action at a distance"; it is a geometric necessity of perspective. Just as your left hand appears as a right hand when you look at it in a mirror, the flow line’s orientation is inverted between the entry and exit points. Measurement at one point instantly determines the other because they are the same object, just viewed from opposite sides of the timeline intersection.</p>
+
+    <h3>Resolving Non-Locality</h3>
+    <p>The framework explains Bell inequality violations without invoking superluminal communication. The flow line exists as a single entity in the Timeless Sea. When measurement forces $\Gamma \to 1$ at the detection point, it instantaneously fixes the local intersection geometry. The correlation is built into the geometry from the moment of timeline intersection, requiring no signal to travel between the particles.</p>
+
+  </article>
+
+  <style>
+    /* Custom CSS to render the vector arrow over the 'S' correctly */
+    .math-vector {
+      position: relative;
+      display: inline-block;
+      font-style: italic;
+      font-family: 'Times New Roman', Times, serif;
+      margin-right: 2px;
+    }
+    .math-vector::after {
+      content: '→';
+      position: absolute;
+      top: -0.6em;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7em;
+      font-style: normal;
+    }
+  </style>
+</BaseLayout>
