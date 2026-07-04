@@ -1,0 +1,319 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Interactive Particle Simulator" description="Build particles using V7 Dual-Dial Topology and observe entanglement mechanics.">
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 1200px; margin: 0 auto;">
+    <h1>Interactive Particle Topology</h1>
+    <p class="lead">Use the controls below to align <strong>Intersection Depth</strong> (Mass) and <strong>Intersection Tilt</strong> (Charge). Click <strong>"Build & Add to Map"</strong> to populate the topology chart. Observe how entanglement maintains geometric continuity during measurement.</p>
+
+    <!-- Main Grid Layout -->
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-bottom: 3rem;">
+      
+      <!-- Left: Controls -->
+      <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <h3 style="margin-top: 0; color: #0f172a;">Topology Dials</h3>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">
+            Intersection Depth (Mass/Resistance)
+          </label>
+          <input type="range" id="depthSlider" min="0" max="100" value="20" style="width: 100%; cursor: pointer;" />
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+            <span>0° (Photon)</span>
+            <span id="depthValue">20</span>
+            <span>90° (Proton)</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">
+            Intersection Tilt (Charge/Vortex)
+          </label>
+          <input type="range" id="tiltSlider" min="-45" max="45" value="-20" style="width: 100%; cursor: pointer;" />
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+            <span>-45° (Negative)</span>
+            <span id="tiltValue">-20°</span>
+            <span>+45° (Positive)</span>
+          </div>
+          <div id="lockIndicator" style="margin-top: 0.5rem; padding: 0.5rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; font-size: 0.85rem; color: #166534; display: none;">
+            🔒 <strong>45° Stability Lock:</strong> Symmetric vortices cancel. Dark Matter configuration.
+          </div>
+        </div>
+
+        <button id="buildBtn" style="width: 100%; padding: 0.75rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">
+          Build & Add to Map
+        </button>
+        <button id="clearBtn" style="width: 100%; padding: 0.75rem; background: #ffffff; color: #ef4444; border: 1px solid #ef4444; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Clear Map
+        </button>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+          <h4 style="margin: 0 0 0.75rem; color: #0f172a; font-size: 0.95rem;">Quick Presets</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <button class="preset-btn" data-d="0" data-t="0" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Photon</button>
+            <button class="preset-btn" data-d="15" data-t="-35" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Electron</button>
+            <button class="preset-btn" data-d="85" data-t="35" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Proton</button>
+            <button class="preset-btn" data-d="80" data-t="0" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Neutron</button>
+            <button class="preset-btn" data-d="50" data-t="45" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Dark Matter</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Particle Map -->
+      <div style="background: #0f172a; padding: 1rem; border-radius: 12px; border: 1px solid #1e293b; position: relative;">
+        <canvas id="particleMap" style="width: 100%; height: 500px; display: block; border-radius: 8px;"></canvas>
+        <div style="position: absolute; top: 1rem; left: 1rem; background: rgba(15, 23, 42, 0.8); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; color: #94a3b8;">
+          X: Intersection Tilt | Y: Intersection Depth
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: Entanglement Animation -->
+    <div style="background: #ffffff; padding: 2rem; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+      <h3 style="margin-top: 0; color: #0f172a;">Entanglement: Shared Flow Line (No Cut)</h3>
+      <p style="color: #475569; margin-bottom: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Measurement does not sever the connection. It forces the shared geometry to resolve. The entry and exit points remain topologically conjugate.
+      </p>
+      <div style="background: #020617; padding: 1rem; border-radius: 12px; border: 1px solid #1e293b; display: inline-block; width: 100%; max-width: 800px;">
+        <canvas id="entanglementCanvas" style="width: 100%; height: 200px; display: block; border-radius: 8px;"></canvas>
+        <button id="measureBtn" style="margin-top: 1rem; padding: 0.6rem 1.5rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Measure State
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <script is:inline>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    function init() {
+      // --- MAP CANVAS SETUP ---
+      const mapCanvas = document.getElementById('particleMap');
+      const mapCtx = mapCanvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      
+      function resizeMapCanvas() {
+        const rect = mapCanvas.getBoundingClientRect();
+        mapCanvas.width = rect.width * dpr;
+        mapCanvas.height = rect.height * dpr;
+        mapCtx.scale(dpr, dpr);
+        mapCanvas.logicalW = rect.width;
+        mapCanvas.logicalH = rect.height;
+        drawMap();
+      }
+      window.addEventListener('resize', resizeMapCanvas);
+
+      let placedParticles = [];
+      const depthSlider = document.getElementById('depthSlider');
+      const tiltSlider = document.getElementById('tiltSlider');
+      const depthVal = document.getElementById('depthValue');
+      const tiltVal = document.getElementById('tiltValue');
+      const lockInd = document.getElementById('lockIndicator');
+      const buildBtn = document.getElementById('buildBtn');
+      const clearBtn = document.getElementById('clearBtn');
+
+      function updatePreview() {
+        depthVal.textContent = depthSlider.value;
+        tiltVal.textContent = tiltSlider.value + '°';
+        lockInd.style.display = Math.abs(tiltSlider.value) === 45 ? 'block' : 'none';
+      }
+      depthSlider.addEventListener('input', updatePreview);
+      tiltSlider.addEventListener('input', updatePreview);
+
+      function getChargeColor(tilt) {
+        if (Math.abs(tilt) < 5) return '#94a3b8'; // Neutral
+        return tilt > 0 ? '#ef4444' : '#3b82f6'; // + or -
+      }
+
+      function drawMap() {
+        const w = mapCanvas.logicalW || 800;
+        const h = mapCanvas.logicalH || 500;
+        mapCtx.clearRect(0, 0, w, h);
+
+        // Grid
+        mapCtx.strokeStyle = '#1e293b';
+        mapCtx.lineWidth = 1;
+        for(let i=0; i<w; i+=40) { mapCtx.beginPath(); mapCtx.moveTo(i,0); mapCtx.lineTo(i,h); mapCtx.stroke(); }
+        for(let i=0; i<h; i+=40) { mapCtx.beginPath(); mapCtx.moveTo(0,i); mapCtx.lineTo(w,i); mapCtx.stroke(); }
+
+        // Axes
+        mapCtx.strokeStyle = '#475569';
+        mapCtx.lineWidth = 2;
+        mapCtx.beginPath(); mapCtx.moveTo(w/2, 0); mapCtx.lineTo(w/2, h); mapCtx.stroke(); // Tilt 0
+        mapCtx.beginPath(); mapCtx.moveTo(0, h); mapCtx.lineTo(w, h); mapCtx.stroke(); // Depth 0 (bottom)
+        
+        // Labels
+        mapCtx.fillStyle = '#94a3b8';
+        mapCtx.font = '12px sans-serif';
+        mapCtx.fillText('Tilt (Charge)', w/2 - 40, h - 10);
+        mapCtx.fillText('Depth (Mass)', 10, 20);
+
+        // Draw Particles
+        placedParticles.forEach(p => {
+          // Map coordinates: X = Tilt (-45 to 45) -> (0 to w)
+          // Y = Depth (0 to 100) -> (h to 0)
+          const x = (p.tilt / 45) * (w/2) + (w/2);
+          const y = h - (p.depth / 100) * h;
+          
+          mapCtx.fillStyle = getChargeColor(p.tilt);
+          mapCtx.beginPath();
+          mapCtx.arc(x, y, 6, 0, Math.PI*2);
+          mapCtx.fill();
+          
+          // Label
+          mapCtx.fillStyle = '#e2e8f0';
+          mapCtx.font = '10px sans-serif';
+          mapCtx.fillText(p.label, x + 10, y + 3);
+        });
+      }
+
+      buildBtn.addEventListener('click', () => {
+        placedParticles.push({
+          depth: parseInt(depthSlider.value),
+          tilt: parseInt(tiltSlider.value),
+          label: `P-${placedParticles.length + 1}`
+        });
+        drawMap();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        placedParticles = [];
+        drawMap();
+      });
+
+      // Preset Buttons
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          depthSlider.value = btn.dataset.d;
+          tiltSlider.value = btn.dataset.t;
+          updatePreview();
+          placedParticles.push({
+            depth: parseInt(btn.dataset.d),
+            tilt: parseInt(btn.dataset.t),
+            label: btn.textContent
+          });
+          drawMap();
+        });
+      });
+
+      resizeMapCanvas();
+
+      // --- ENTANGLEMENT CANVAS SETUP ---
+      const entCanvas = document.getElementById('entanglementCanvas');
+      const entCtx = entCanvas.getContext('2d');
+      const measureBtn = document.getElementById('measureBtn');
+      
+      function resizeEntCanvas() {
+        const rect = entCanvas.getBoundingClientRect();
+        entCanvas.width = rect.width * dpr;
+        entCanvas.height = rect.height * dpr;
+        entCtx.scale(dpr, dpr);
+        entCanvas.logicalW = rect.width;
+        entCanvas.logicalH = rect.height;
+      }
+      window.addEventListener('resize', resizeEntCanvas);
+
+      let entState = 'idle'; // idle, measuring, resolved
+      let measureTime = 0;
+
+      function drawEntanglement() {
+        const w = entCanvas.logicalW || 800;
+        const h = entCanvas.logicalH || 200;
+        entCtx.clearRect(0, 0, w, h);
+
+        const cx1 = w * 0.3;
+        const cx2 = w * 0.7;
+        const cy = h / 2;
+
+        // Flow Line (Continuous, never cuts)
+        entCtx.strokeStyle = entState === 'resolved' ? '#10b981' : '#3b82f6';
+        entCtx.lineWidth = 3;
+        entCtx.setLineDash([5, 5]);
+        entCtx.beginPath();
+        entCtx.moveTo(cx1, cy);
+        // Sine wave between them
+        for(let x = cx1; x <= cx2; x += 5) {
+          const progress = (x - cx1) / (cx2 - cx1);
+          const y = cy + Math.sin(progress * 6 + Date.now() * 0.002) * 15;
+          entCtx.lineTo(x, y);
+        }
+        entCtx.stroke();
+        entCtx.setLineDash([]);
+
+        // Particles
+        const drawParticle = (cx, cy, spinUp) => {
+          entCtx.fillStyle = '#e2e8f0';
+          entCtx.beginPath();
+          entCtx.arc(cx, cy, 15, 0, Math.PI*2);
+          entCtx.fill();
+          
+          // Spin Arrow
+          entCtx.strokeStyle = '#0f172a';
+          entCtx.lineWidth = 2;
+          entCtx.beginPath();
+          entCtx.moveTo(cx, cy + 8);
+          entCtx.lineTo(cx, cy - 8);
+          entCtx.stroke();
+          entCtx.beginPath();
+          entCtx.moveTo(cx - 4, cy - 4);
+          entCtx.lineTo(cx, cy - 8);
+          entCtx.lineTo(cx + 4, cy - 4);
+          entCtx.stroke();
+          
+          if (spinUp) {
+            entCtx.fillStyle = '#ef4444';
+            entCtx.fillText('↑', cx - 4, cy - 12);
+          } else {
+            entCtx.fillStyle = '#3b82f6';
+            entCtx.fillText('↓', cx - 4, cy + 16);
+          }
+        };
+
+        // Initial state: random/fluctuating
+        let s1 = true, s2 = false;
+        if (entState === 'resolved') {
+          s1 = true; s2 = false; // Locked correlation
+        }
+
+        drawParticle(cx1, cy, s1);
+        drawParticle(cx2, cy, s2);
+
+        // Measurement Flash
+        if (entState === 'measuring') {
+          entCtx.fillStyle = `rgba(245, 158, 11, ${0.5 + Math.sin(Date.now() * 0.01) * 0.5})`;
+          entCtx.fillRect(0, 0, w, h);
+          entCtx.fillStyle = '#f59e0b';
+          entCtx.font = 'bold 14px sans-serif';
+          entCtx.fillText('MEASURING...', w/2 - 40, h/2);
+        }
+      }
+
+      measureBtn.addEventListener('click', () => {
+        if (entState === 'idle') {
+          entState = 'measuring';
+          measureBtn.disabled = true;
+          measureBtn.textContent = 'Resolving...';
+          setTimeout(() => {
+            entState = 'resolved';
+            measureBtn.disabled = false;
+            measureBtn.textContent = 'Reset Measurement';
+          }, 1200);
+        } else {
+          entState = 'idle';
+          measureBtn.textContent = 'Measure State';
+        }
+      });
+
+      function animateEnt() {
+        drawEntanglement();
+        requestAnimationFrame(animateEnt);
+      }
+      resizeEntCanvas();
+      animateEnt();
+    }
+  </script>
+</BaseLayout>
