@@ -1,30 +1,35 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Pulse Propulsion" description="How to reach light speed using Temporal Decoupling.">
+<BaseLayout title="Pulse Propulsion" description="How to approach light speed using Temporal Decoupling.">
   <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 900px; margin: 0 auto;">
     <h1>Temporal Pulse Propulsion</h1>
-    <p class="lead">Standard physics says the energy required to reach light speed is infinite. <strong>Temporal Decoupling</strong> says the energy is required to fight <em>time</em>. By pulsing our acceleration, we can reset that friction and conserve energy.</p>
+    <p class="lead">Standard physics says the energy required to reach light speed is infinite. <strong>Temporal Decoupling</strong> explains why: Light speed is not just a velocity; it is the boundary between our Timeline and the Timeless Sea (TSC). Crossing it requires infinite energy to overcome the temporal pressure gradient.</p>
 
     <!-- Interactive Simulation -->
-    <div style="background: #0f172a; padding: 2rem; border-radius: 16px; margin: 2rem 0; text-align: center;">
-      
-      <canvas id="pulseCanvas" width="600" height="300" style="display: block; width: 100%; max-width: 600px; height: 300px; border: 1px solid #334155; border-radius: 8px; margin: 0 auto; background: #020617;"></canvas>
+    <div style="background: #020617; padding: 1rem; border-radius: 16px; margin: 2rem 0; text-align: center; border: 1px solid #1e293b;">
+      <canvas id="pulseCanvas" width="800" height="400" style="display: block; width: 100%; max-width: 800px; height: 400px; border-radius: 8px; margin: 0 auto;"></canvas>
       
       <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
         <button id="btnStandard" style="padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">Standard Drive</button>
         <button id="btnPulse" style="padding: 0.5rem 1rem; background: #2563EB; color: white; border: none; cursor: pointer; border-radius: 4px;">Pulse Drive (Theory)</button>
         <button id="btnReset" style="padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">Reset</button>
       </div>
-      <p id="statusText" style="color: #94a3b8; margin-top: 1rem; font-size: 0.9rem; min-height: 1.5em;">Select a drive mode to compare efficiency.</p>
+      
+      <p id="statusText" style="color: #94a3b8; margin-top: 1rem; font-size: 0.9rem; min-height: 1.5em; padding: 0 1rem;">Select a drive mode to visualize temporal pressure.</p>
     </div>
 
-    <h2>The Theory: Grid Compression &amp; Inertial Coasting</h2>
-    <p>When a ship accelerates, it pushes against the "tide" of the timeline. This resistance manifests as a compression of the temporal grid. As the grid lines pack closer together, the energy required to maintain thrust increases exponentially.</p>
+    <h2>The Mechanic: Temporal Pressure & The Boundary</h2>
+    <p>In this model, acceleration does not just increase speed; it increases <strong>Temporal Pressure</strong>. As the ship pushes against the flowline, it creates a "bulge" of resistance (visualized as the darkening blue gradient).</p>
+    
     <ul>
-      <li><strong>Standard Drive:</strong> Continuous acceleration compresses the grid relentlessly. The energy cost skyrockets. The ship burns through its fuel supply around the 50% mark, stalls, and coasts to a halt. The compressed grid relaxes as the ship loses momentum.</li>
-      <li><strong>Pulse Drive:</strong> Accelerate → Stop (Coast) → Accelerate. During the "Coast" phase, the ship decouples from the timeline flow. The temporal grid <em>spreads back out</em> to normal spacing (zero resistance). Crucially, the ship maintains its high velocity through space, so the relaxed grid lines rush past it. This allows the ship to conserve energy and approach the light barrier asymptotically.</li>
+      <li><strong>The Gradient Bulge:</strong> Mass creates drag on the timeline. Acceleration intensifies this drag, compressing the temporal field around the ship. The darker the blue, the higher the energy cost to maintain thrust.</li>
+      <li><strong>Pulse Coasting:</strong> By stopping acceleration, the ship decouples from the active push. The temporal pressure dissipates (gradient fades), allowing the ship to conserve energy while maintaining momentum through space.</li>
+      <li><strong>The Light Speed Barrier:</strong> Represented by the black vertical bar. As velocity approaches <em>c</em>, the temporal pressure becomes infinite. To cross this barrier would require leaving our timeline entirely, entering the TSC where the momentum difference could dismantle physical matter.</li>
     </ul>
+
+    <h3>Why Earth Launch Requires So Much Power</h3>
+    <p>This visualization also explains planetary launch. The Earth itself has a massive temporal bulge (gravity). To leave Earth, a ship must overcome both its own temporal drag AND the Earth's deep temporal well. The combined gradients create an immense energy threshold just to reach orbit.</p>
   </article>
 
   <script is:inline>
@@ -37,7 +42,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     function init() {
       const canvas = document.getElementById('pulseCanvas');
       if (!canvas) return;
-      
       const ctx = canvas.getContext('2d');
       const btnStandard = document.getElementById('btnStandard');
       const btnPulse = document.getElementById('btnPulse');
@@ -46,214 +50,188 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
       let animationId;
       let mode = 'none';
-      let shipX = 50;
       let velocity = 0;
-      let gridOffset = 0;
-      let currentSpacing = 40;
+      let pressure = 0; // 0 to 1 (represents gradient darkness)
+      let distance = 0; // Simulated distance for stars
       let energy = 100;
-
-      // TUNING PARAMETERS
-      const MAX_SPEED = 4.5;
-      const STANDARD_THRUST = 0.35;
-      const PULSE_THRUST = 0.45;
-      const ACCEL_RATE = 0.08;
-      const COAST_DECAY = 0.96; // Standard drive slows down when out of fuel
-      const PULSE_COAST_DECAY = 0.9995; // Pulse drive maintains momentum in space (near zero decay)
-      const BARRIER_THRESHOLD = 0.95; 
-
-      function getCanvasDimensions() {
-        const rect = canvas.getBoundingClientRect();
-        return { width: rect.width || 600, height: rect.height || 300 };
+      
+      // Starfield
+      const stars = [];
+      const numStars = 150;
+      for(let i=0; i<numStars; i++) {
+        stars.push({
+          x: Math.random() * 800,
+          y: Math.random() * 400,
+          size: Math.random() * 2 + 0.5,
+          speed: Math.random() * 0.5 + 0.1
+        });
       }
+
+      // Tuning
+      const MAX_SPEED = 5.0;
+      const BARRIER_POS = 700; // X position of the black bar
 
       function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
-        const { width, height } = getCanvasDimensions();
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
-        canvas.logicalWidth = width;
-        canvas.logicalHeight = height;
-        draw();
+        canvas.logicalWidth = rect.width;
+        canvas.logicalHeight = rect.height;
       }
 
       function draw() {
-        const width = canvas.logicalWidth || 600;
-        const height = canvas.logicalHeight || 300;
-        const lightSpeedLimit = width - 80;
-
-        ctx.clearRect(0, 0, width, height);
+        const w = canvas.logicalWidth || 800;
+        const h = canvas.logicalHeight || 400;
         
-        // 1. Draw the Dynamic Temporal Grid
-        ctx.lineWidth = 1.5;
+        // 1. Background Gradient (Temporal Pressure)
+        // Interpolate color based on pressure
+        // Low pressure: Light Blue (#3b82f6) -> Transparent
+        // High pressure: Dark Blue (#0f172a) -> Black (#000000)
         
-        // Color & glow based on compression
-        if (currentSpacing < 12) {
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = '#ef4444';
-          ctx.strokeStyle = '#ef4444';
-        } else if (currentSpacing < 22) {
-          ctx.shadowBlur = 4;
-          ctx.shadowColor = '#f59e0b';
-          ctx.strokeStyle = '#f59e0b';
-        } else {
-          ctx.shadowBlur = 0;
-          ctx.strokeStyle = '#334155';
-        }
+        const r = 15 - (pressure * 15);
+        const g = 23 - (pressure * 23);
+        const b = 42 - (pressure * 42);
+        
+        const grad = ctx.createLinearGradient(0, 0, w, 0);
+        grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`); // Left side (Ship area)
+        grad.addColorStop(1, '#020617'); // Right side (Deep space/TSC)
+        
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
 
-        for (let x = -currentSpacing; x < width; x += currentSpacing) {
-          let drawX = (x - gridOffset) % width;
-          if (drawX < 0) drawX += width;
-          ctx.beginPath();
-          ctx.moveTo(drawX, 0);
-          ctx.lineTo(drawX, height);
-          ctx.stroke();
-        }
-        ctx.shadowBlur = 0;
+        // 2. Stars with Motion Blur
+        ctx.fillStyle = '#ffffff';
+        stars.forEach(star => {
+          // Move stars left based on velocity
+          star.x -= star.speed * (velocity * 2);
+          if (star.x < 0) star.x += w;
 
-        // 2. Draw Light Speed Barrier
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 3;
-        ctx.setLineDash([6, 6]);
-        ctx.beginPath();
-        ctx.moveTo(lightSpeedLimit, 0);
-        ctx.lineTo(lightSpeedLimit, height);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillText('LIGHT SPEED BARRIER', lightSpeedLimit - 65, 20);
-
-        // 3. Draw Ship
-        if (mode !== 'none' || shipX > 50) {
-          ctx.fillStyle = '#3b82f6';
-          ctx.beginPath();
-          ctx.arc(shipX, height / 2, 10, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Exhaust (only when pushing & has energy)
-          let isPushing = (mode === 'standard' && energy > 0) || (mode === 'pulse' && (shipX % 400) < 200 && energy > 0);
-          if (isPushing && velocity > 0.1) {
-             ctx.fillStyle = '#f59e0b';
-             ctx.fillRect(shipX - 15, height/2 - 3, 10, 6);
+          // Draw streak if moving fast
+          if (velocity > 1) {
+            ctx.globalAlpha = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(star.x, star.y);
+            ctx.lineTo(star.x + (velocity * 10), star.y);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = star.size / 2;
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+          } else {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI*2);
+            ctx.fill();
           }
+        });
+
+        // 3. The Ship (Fixed Position)
+        const shipX = 100;
+        const shipY = h / 2;
+        
+        // Ship Body
+        ctx.fillStyle = '#e2e8f0';
+        ctx.beginPath();
+        ctx.moveTo(shipX, shipY);
+        ctx.lineTo(shipX - 20, shipY - 10);
+        ctx.lineTo(shipX - 20, shipY + 10);
+        ctx.fill();
+        
+        // Engine Glow (only when pushing)
+        if ((mode === 'standard' && energy > 0) || (mode === 'pulse' && distance % 400 < 200 && energy > 0)) {
+           ctx.fillStyle = '#f59e0b';
+           ctx.beginPath();
+           ctx.moveTo(shipX - 20, shipY - 5);
+           ctx.lineTo(shipX - 35 - (velocity*2), shipY);
+           ctx.lineTo(shipX - 20, shipY + 5);
+           ctx.fill();
         }
 
-        // 4. Draw Resistance Bar
-        let resistancePercent = 1 - (currentSpacing / 40);
+        // 4. Light Speed Barrier (The Black Bar)
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(BARRIER_POS, 0, 20, h);
+        
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText('LIGHT SPEED BARRIER', BARRIER_POS - 60, 30);
+        ctx.fillText('(TSC Boundary)', BARRIER_POS - 60, 50);
+
+        // 5. UI Bars
+        // Pressure Bar
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(10, height - 40, width - 20, 10);
-        ctx.fillStyle = resistancePercent > 0.8 ? '#ef4444' : '#10b981';
-        ctx.fillRect(10, height - 40, (width - 20) * resistancePercent, 10);
+        ctx.fillRect(20, h - 60, w - 40, 10);
+        ctx.fillStyle = pressure > 0.8 ? '#ef4444' : '#3b82f6';
+        ctx.fillRect(20, h - 60, (w - 40) * pressure, 10);
         ctx.fillStyle = '#94a3b8';
         ctx.font = '10px sans-serif';
-        ctx.fillText('TEMPORAL RESISTANCE (Grid Density)', 10, height - 45);
+        ctx.fillText('TEMPORAL PRESSURE (Drag)', 20, h - 65);
 
-        // 5. Draw Energy Bar
+        // Energy Bar
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(10, height - 20, width - 20, 10);
-        ctx.fillStyle = energy > 30 ? '#3b82f6' : '#ef4444';
-        ctx.fillRect(10, height - 20, (width - 20) * (energy / 100), 10);
-        ctx.fillStyle = '#94a3b8';
-        ctx.fillText('SHIP ENERGY', 10, height - 25);
+        ctx.fillRect(20, h - 30, w - 40, 10);
+        ctx.fillStyle = energy > 30 ? '#10b981' : '#ef4444';
+        ctx.fillRect(20, h - 30, (w - 40) * (energy / 100), 10);
+        ctx.fillText('SHIP ENERGY', 20, h - 35);
       }
 
       function update() {
-        const width = canvas.logicalWidth || 600;
-        const lightSpeedLimit = width - 80;
-        const totalDistance = lightSpeedLimit - 50;
-        const progress = (shipX - 50) / totalDistance;
-
+        const w = canvas.logicalWidth || 800;
+        
         if (mode === 'standard') {
-          let resistance = Math.pow(velocity / MAX_SPEED, 2);
-          let energyDrain = 0.25 + (resistance * 1.8); 
-          energy -= energyDrain;
-
-          if (energy > 0 && progress < 0.55) {
-             let netForce = STANDARD_THRUST - (resistance * 1.2);
-             if (netForce > 0) {
-                velocity += netForce * ACCEL_RATE;
-                shipX += velocity;
-                currentSpacing = 40 * (1 - resistance * 0.9);
-                statusText.innerText = "Standard Drive: Accelerating. Grid compressing. Energy depleting...";
-                statusText.style.color = "#f59e0b";
-             } else {
-                statusText.innerText = "Standard Drive: Max resistance reached. Energy critical.";
-                statusText.style.color = "#ef4444";
-             }
+          // Standard: Continuous push, pressure builds, energy drains
+          if (energy > 0 && velocity < MAX_SPEED * 0.9) {
+             velocity += 0.05;
+             energy -= 0.3;
+             pressure += 0.01; // Pressure builds up
+             if (pressure > 1) pressure = 1;
+             statusText.innerText = "Standard Drive: Pressure building. Energy draining rapidly.";
+             statusText.style.color = "#ef4444";
           } else {
-             if (energy <= 0) energy = 0;
-             velocity *= COAST_DECAY; // Slows down to a halt
-             shipX += velocity;
-             
-             currentSpacing += (40 - currentSpacing) * 0.1;
-             if (currentSpacing > 39.5) currentSpacing = 40;
-
-             if (progress < 0.5 && energy <= 0) {
-                statusText.innerText = "Standard Drive: FUEL DEPLETED. Losing momentum.";
-                statusText.style.color = "#ef4444";
-             } else if (velocity < 0.1) {
-                statusText.innerText = "Standard Drive: Halted. Ship stranded at 50% light speed.";
-                statusText.style.color = "#94a3b8";
-                mode = 'none';
+             if (energy <= 0) {
+                velocity *= 0.98; // Slow down
+                pressure *= 0.95; // Pressure releases
+                statusText.innerText = "Standard Drive: Fuel depleted. Drifting.";
              }
           }
-
-        } else if (mode === 'pulse') {
-           // Longer cycle so you can see the coasting phase clearly
-           let cyclePos = shipX % 400; 
-           let resistance = Math.pow(velocity / MAX_SPEED, 2);
-           
-           // Push phase (first 200px of cycle)
-           if (cyclePos < 200 && progress < BARRIER_THRESHOLD) {
-             if (energy > 0) {
-                let netForce = PULSE_THRUST - (resistance * 1.0);
-                let energyDrain = 0.12 + (resistance * 0.7);
-                energy -= energyDrain;
-
-                if (netForce > 0) {
-                   velocity += netForce * ACCEL_RATE;
-                   shipX += velocity;
-                   currentSpacing = 40 * (1 - resistance * 0.85);
-                   statusText.innerText = "Pulse Drive: Accelerating. Grid compressing.";
-                   statusText.style.color = "#f59e0b";
-                }
-             } else {
-                cyclePos = 200; // Force coast if out of energy
-             }
-           } else {
-             // Coast phase: Grid resets, but SHIP KEEPS MOVING!
-             currentSpacing += (40 - currentSpacing) * 0.15;
-             if (currentSpacing > 39.5) currentSpacing = 40;
-
-             // Newton's First Law: Maintain momentum in space
-             velocity *= PULSE_COAST_DECAY; 
-             shipX += velocity;
-             energy -= 0.02; 
-             if (energy < 0) energy = 0;
-             statusText.innerText = "Pulse Drive: Coasting. Grid relaxed, but momentum maintained!";
+        } 
+        else if (mode === 'pulse') {
+          // Pulse Logic
+          let cyclePos = distance % 400;
+          
+          if (cyclePos < 200 && energy > 0 && velocity < MAX_SPEED * 0.95) {
+             // Push Phase
+             velocity += 0.08;
+             energy -= 0.15;
+             pressure += 0.02;
+             if (pressure > 1) pressure = 1;
+             statusText.innerText = "Pulse Drive: Accelerating. Temporal pressure increasing.";
+             statusText.style.color = "#f59e0b";
+          } else {
+             // Coast Phase
+             pressure *= 0.92; // Pressure releases quickly
+             if (pressure < 0.05) pressure = 0;
+             
+             // Maintain momentum (Newton's 1st Law)
+             velocity *= 0.999; 
+             
+             // Small energy drain for systems
+             if (energy > 0) energy -= 0.05;
+             
+             statusText.innerText = "Pulse Drive: Coasting. Pressure dissipated. Momentum maintained.";
              statusText.style.color = "#3b82f6";
-           }
-
-           // Asymptotic approach: Never cross the barrier
-           if (progress > 0.85) {
-              velocity *= 0.97; 
-              if (shipX >= lightSpeedLimit - 5) {
-                 shipX = lightSpeedLimit - 5;
-                 velocity = 0;
-                 currentSpacing = 40;
-                 statusText.innerText = "Pulse Drive: Threshold reached. Hovering at 99% light speed.";
-                 statusText.style.color = "#f59e0b";
-                 mode = 'none';
-              }
-           }
+          }
+          distance += velocity;
         }
 
-        // Move grid based on ship velocity (This keeps the grid flowing during coast!)
-        gridOffset += velocity;
+        // Cap velocity at barrier approach
+        if (velocity > MAX_SPEED * 0.98) {
+           velocity = MAX_SPEED * 0.98;
+           statusText.innerText = "WARNING: Approaching TSC Boundary. Infinite energy required to cross.";
+           statusText.style.color = "#ef4444";
+        }
 
         draw();
-        if (mode !== 'none' || velocity > 0.05) {
+        if (mode !== 'none' || velocity > 0.1) {
           animationId = requestAnimationFrame(update);
         }
       }
@@ -274,19 +252,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
       function reset() {
         mode = 'none';
-        shipX = 50;
         velocity = 0;
-        gridOffset = 0;
-        currentSpacing = 40;
+        pressure = 0;
         energy = 100;
+        distance = 0;
         statusText.innerText = "Select a drive mode.";
         statusText.style.color = "#94a3b8";
         draw();
         cancelAnimationFrame(animationId);
       }
 
-      resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
       draw();
     }
   </script>
