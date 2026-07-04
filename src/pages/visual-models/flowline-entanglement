@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Flowline Entanglement" description="How measurement bisects flowlines, creating mirror states across the temporal cut.">
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 800px; margin: 0 auto;">
+    <h1>Flowline Entanglement: Topological Conjugates</h1>
+    <p class="lead">Entangled particles are not two separate objects communicating across space. They are two intersection points of the exact same static flow line, viewed on a single "page" of our moving timeline.</p>
+
+    <figure style="margin: 2rem 0; text-align: center; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px dashed #cbd5e1;">
+      <div style="font-size: 1.2rem; color: #64748b; font-style: italic;">
+      <img
+        src="/images/09-flowlines.jpg"
+        alt="Hydrodynamic Particle Map: Dual-dial topology showing intersection depth (mass) and tilt (charge)" 
+        style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);" 
+        loading="lazy"
+        />
+      </div>
+      <figcaption style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">Fig 2. A single TSC flow line intersects the timeline at two points: the Entry and the Exit. Measurement induces a temporal crease that locks geometry at both ends simultaneously.</figcaption>
+    </figure>
+
+    <h2>Opposite Spins as Geometric Chirality</h2>
+    <p>A flow line has a fixed orientation in the Timeless Sea. When our timeline hypersurface sweeps through it, the Entry and Exit points are geometric mirror images—like a right hand pressed against a windowpane emerging as a left hand on the other side. The relationship <code>S<sub>exit</sub> = −S<sub>entry</sub></code> is a mechanical requirement, not a mysterious correlation.</p>
+
+    <h2>The "Crease" Mechanism</h2>
+    <p>In standard quantum mechanics, measurement "collapses" the wavefunction. In this framework, measurement forces a <strong>Temporal Crease</strong> (<code>Γ → 1</code>). The timeline physically crumples around the flow line at the point of interaction.</p>
+    <p>Because the Entry and Exit are topological conjugates of the exact same object, locking the geometry at one end instantly locks the other. There is no faster-than-light signal traversing space; there is only a failure to recognize that what appears as two objects in 3D space is actually one continuous structure viewed through the thickness of a 4D boundary.</p>
+
+    <h2>Matter-Antimatter Symmetry</h2>
+    <p>This same topology explains antimatter. A flow line piercing the timeline creates an Entry Point (matter) and an Exit Point (antimatter). The depth (mass) is identical, but the left/right tilt (charge) is perfectly mirrored. If the Entry is Negative, the Exit is mathematically forced to be Positive. Antimatter is simply the geometric "exit wound" of the flow line.</p>
+
+    <div style="margin-top: 2rem; padding: 1.5rem; background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 0 8px 8px 0;">
+      <h3 style="margin-top: 0; color: #166534;">Key Insight</h3>
+      <p style="margin-bottom: 0; color: #15803d;">Entanglement does not require hidden variables or non-local communication. It is a direct geometric consequence of a single static entity intersecting a moving boundary at two distinct coordinates.</p>
+    </div>
+  </article>
+</BaseLayout>

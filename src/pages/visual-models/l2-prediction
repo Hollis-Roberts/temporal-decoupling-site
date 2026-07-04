@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="L2 Qubit Coherence Test" description="Visual explanation of the primary falsifiable test: Why qubits at L2 should show 10x-100x coherence improvement.">
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 800px; margin: 0 auto;">
+    <h1>The L2 Falsification Test</h1>
+    <p class="lead">A conceptual framework that cannot be broken is not science. The Temporal Decoupling framework makes a specific, strictly falsifiable prediction regarding quantum decoherence and gravitational density.</p>
+
+    <figure style="margin: 2rem 0; text-align: center; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px dashed #cbd5e1;">
+      <div style="font-size: 1.2rem; color: #64748b; font-style: italic;">
+        <img
+            src="/images/l2-test.png"
+            alt="Hydrodynamic Particle Map: Dual-dial topology showing intersection depth (mass) and tilt (charge)" 
+            style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);" 
+            loading="lazy"
+         />
+      </div>
+      <figcaption style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">Fig 4. Qubit coherence times (T₂) scale inversely with local gravitational density. At L2, reduced timeline friction should yield a 10¹–10² improvement.</figcaption>
+    </figure>
+
+    <h2>Primary Prediction: Qubit Coherence Scaling at L2</h2>
+    <p>Standard open quantum systems models lack a fundamental environmental channel: <strong>Timeline Decoherence</strong>. This framework proposes that the total decoherence rate is the sum of standard thermal/electromagnetic noise and a timeline coupling rate (<code>Γ<sub>timeline</sub></code>) that scales linearly with local gravitational density (<code>ρ</code>).</p>
+    <p>At the Sun-Earth L2 Lagrange point, the local gravitational potential is reduced by roughly two orders of magnitude (<code>∼1/240</code> of Earth's surface). Removing this timeline friction should cause a proportional increase in coherence time.</p>
+    
+    <div style="background: #1e293b; color: #f8fafc; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+      <h3 style="margin-top: 0; color: #38bdf8;">The Prediction</h3>
+      <p style="margin-bottom: 0;">Qubit coherence times (T₂) at L2 will exhibit an unexplained improvement in the range of <strong>one to two orders of magnitude (10¹ to 10²)</strong> beyond standard thermal isolation baselines.</p>
+    </div>
+
+    <h2>Falsification Threshold</h2>
+    <p>If T₂ scaling across superconducting, trapped-ion, and NV-center platforms at L2 perfectly matches standard environmental noise models with <strong>no anomalous gravitational/decoherence correlation</strong>, the timeline-coupling hypothesis is falsified.</p>
+
+    <h2>Secondary Ground-Based Test: Dark Matter Chronometric Drift</h2>
+    <p>If Dark Matter alters local density (<code>ρ</code>), it must alter local ticking time. The framework predicts that high-precision atomic clock networks will exhibit tiny, unexplained temporal drifts that correlate spatially with dark matter density maps.</p>
+
+    <div style="margin-top: 2rem; padding: 1.5rem; background: #faf5ff; border-left: 4px solid #a855f7; border-radius: 0 8px 8px 0;">
+      <h3 style="margin-top: 0; color: #6b21a8;">Epistemic Boundary</h3>
+      <p style="margin-bottom: 0; color: #581c87;">This framework was not reverse-engineered to solve cosmological anomalies. It is a strictly constrained geometric architecture. We present the L2 prediction as the definitive experimental boundary: measure the decoherence, and let the timeline decide.</p>
+    </div>
+  </article>
+</BaseLayout>
