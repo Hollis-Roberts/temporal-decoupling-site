@@ -4,23 +4,26 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <BaseLayout title="Interactive Particle Simulator" description="Build particles using V7 Dual-Dial Topology and observe entanglement mechanics.">
   <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 1200px; margin: 0 auto;">
     <h1>Interactive Particle Topology</h1>
-    <p class="lead">Use the controls below to align <strong>Intersection Depth</strong> (Mass) and <strong>Intersection Tilt</strong> (Charge). Click <strong>"Build & Add to Map"</strong> to populate the topology chart. Observe how entanglement maintains geometric continuity during measurement.</p>
+    <p class="lead">Use the controls to align <strong>Intersection Depth</strong> (Mass) and <strong>Intersection Tilt</strong> (Charge). Watch for "Particle Matches" to find known particles. Click <strong>"Build & Add to Map"</strong> to plot both the particle and its antimatter mirror.</p>
 
     <!-- Main Grid Layout -->
-    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-bottom: 3rem;">
+    <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem; margin-bottom: 3rem;">
       
       <!-- Left: Controls -->
       <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-        <h3 style="margin-top: 0; color: #0f172a;">Topology Dials</h3>
-        
+        <div style="background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center;">
+          <h3 id="particleName" style="margin: 0; color: #2563eb; font-size: 1.2rem;">Unknown Particle</h3>
+        </div>
+
         <div style="margin-bottom: 1.5rem;">
           <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">
             Intersection Depth (Mass/Resistance)
           </label>
-          <input type="range" id="depthSlider" min="0" max="100" value="20" style="width: 100%; cursor: pointer;" />
+          <input type="range" id="depthSlider" min="0" max="100" value="50" style="width: 100%; cursor: pointer; background: transparent;" />
+          <div id="depthMarkers" style="height: 10px; position: relative; margin-top: -5px;"></div>
           <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
             <span>0° (Photon)</span>
-            <span id="depthValue">20</span>
+            <span id="depthValue">50</span>
             <span>90° (Proton)</span>
           </div>
         </div>
@@ -29,14 +32,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">
             Intersection Tilt (Charge/Vortex)
           </label>
-          <input type="range" id="tiltSlider" min="-45" max="45" value="-20" style="width: 100%; cursor: pointer;" />
+          <input type="range" id="tiltSlider" min="-45" max="45" value="0" style="width: 100%; cursor: pointer; background: transparent;" />
+          <div id="tiltMarkers" style="height: 10px; position: relative; margin-top: -5px;"></div>
           <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
-            <span>-45° (Negative)</span>
-            <span id="tiltValue">-20°</span>
-            <span>+45° (Positive)</span>
+            <span>-45° (Neg)</span>
+            <span id="tiltValue">0°</span>
+            <span>+45° (Pos)</span>
           </div>
           <div id="lockIndicator" style="margin-top: 0.5rem; padding: 0.5rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; font-size: 0.85rem; color: #166534; display: none;">
-            🔒 <strong>45° Stability Lock:</strong> Symmetric vortices cancel. Dark Matter configuration.
+            🔒 <strong>45° Stability Lock:</strong> Symmetric vortices cancel. Dark Matter.
           </div>
         </div>
 
@@ -46,39 +50,29 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         <button id="clearBtn" style="width: 100%; padding: 0.75rem; background: #ffffff; color: #ef4444; border: 1px solid #ef4444; border-radius: 8px; font-weight: 600; cursor: pointer;">
           Clear Map
         </button>
-
-        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
-          <h4 style="margin: 0 0 0.75rem; color: #0f172a; font-size: 0.95rem;">Quick Presets</h4>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-            <button class="preset-btn" data-d="0" data-t="0" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Photon</button>
-            <button class="preset-btn" data-d="15" data-t="-35" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Electron</button>
-            <button class="preset-btn" data-d="85" data-t="35" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Proton</button>
-            <button class="preset-btn" data-d="80" data-t="0" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Neutron</button>
-            <button class="preset-btn" data-d="50" data-t="45" style="padding: 0.4rem 0.8rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Dark Matter</button>
-          </div>
-        </div>
       </div>
 
       <!-- Right: Particle Map -->
       <div style="background: #0f172a; padding: 1rem; border-radius: 12px; border: 1px solid #1e293b; position: relative;">
         <canvas id="particleMap" style="width: 100%; height: 500px; display: block; border-radius: 8px;"></canvas>
-        <div style="position: absolute; top: 1rem; left: 1rem; background: rgba(15, 23, 42, 0.8); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; color: #94a3b8;">
-          X: Intersection Tilt | Y: Intersection Depth
+        <div style="position: absolute; top: 1rem; left: 1rem; background: rgba(15, 23, 42, 0.9); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; color: #94a3b8; border: 1px solid #334155;">
+          <span style="color: #3b82f6;">●</span> Matter (Entry) &nbsp; <span style="color: #ef4444;">●</span> Antimatter (Exit)
         </div>
       </div>
     </div>
 
     <!-- Bottom: Entanglement Animation -->
     <div style="background: #ffffff; padding: 2rem; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
-      <h3 style="margin-top: 0; color: #0f172a;">Entanglement: Shared Flow Line (No Cut)</h3>
+      <h3 style="margin-top: 0; color: #0f172a;">Entanglement: The Mirror View</h3>
       <p style="color: #475569; margin-bottom: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-        Measurement does not sever the connection. It forces the shared geometry to resolve. The entry and exit points remain topologically conjugate.
+        Before measurement, the flowline is continuous. Measurement introduces a "crease" that breaks the beam, forcing the particles to resolve as geometric mirrors.
       </p>
       <div style="background: #020617; padding: 1rem; border-radius: 12px; border: 1px solid #1e293b; display: inline-block; width: 100%; max-width: 800px;">
         <canvas id="entanglementCanvas" style="width: 100%; height: 200px; display: block; border-radius: 8px;"></canvas>
-        <button id="measureBtn" style="margin-top: 1rem; padding: 0.6rem 1.5rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          Measure State
+        <button id="measureBtn" style="margin-top: 1rem; padding: 0.6rem 1.5rem; background: #f59e0b; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;">
+          🔍 Intersect Flowline (Measure)
         </button>
+        <p id="entStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: #94a3b8;">System: Superposition (Connected)</p>
       </div>
     </div>
   </article>
@@ -91,6 +85,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     }
 
     function init() {
+      // --- DATA: KNOWN PARTICLES ---
+      const particles = [
+        { name: "Photon", depth: 0, tilt: 0 },
+        { name: "Neutrino", depth: 5, tilt: 0 },
+        { name: "Electron", depth: 15, tilt: -30 },
+        { name: "Positron", depth: 15, tilt: 30 },
+        { name: "Proton", depth: 85, tilt: 30 },
+        { name: "Antiproton", depth: 85, tilt: -30 },
+        { name: "Neutron", depth: 85, tilt: 0 },
+        { name: "Dark Matter", depth: 50, tilt: 45 }, // Stability Lock
+        { name: "Dark Matter", depth: 50, tilt: -45 }
+      ];
+
       // --- MAP CANVAS SETUP ---
       const mapCanvas = document.getElementById('particleMap');
       const mapCtx = mapCanvas.getContext('2d');
@@ -112,15 +119,66 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       const tiltSlider = document.getElementById('tiltSlider');
       const depthVal = document.getElementById('depthValue');
       const tiltVal = document.getElementById('tiltValue');
+      const particleName = document.getElementById('particleName');
       const lockInd = document.getElementById('lockIndicator');
       const buildBtn = document.getElementById('buildBtn');
       const clearBtn = document.getElementById('clearBtn');
 
+      // Markers containers
+      const depthMarkersDiv = document.getElementById('depthMarkers');
+      const tiltMarkersDiv = document.getElementById('tiltMarkers');
+
       function updatePreview() {
-        depthVal.textContent = depthSlider.value;
-        tiltVal.textContent = tiltSlider.value + '°';
-        lockInd.style.display = Math.abs(tiltSlider.value) === 45 ? 'block' : 'none';
+        const d = parseInt(depthSlider.value);
+        const t = parseInt(tiltSlider.value);
+        depthVal.textContent = d;
+        tiltVal.textContent = t + '°';
+        lockInd.style.display = Math.abs(t) === 45 ? 'block' : 'none';
+
+        // 1. Identify Particle
+        let bestMatch = null;
+        let minDist = 25; // Threshold for "Match"
+
+        particles.forEach(p => {
+          // Calculate distance in the 2D space of Depth/Tilt
+          // Normalize Tilt to 0-100 scale roughly for distance calc (tilt -45 to 45 is 90 range)
+          let tNorm = ((p.tilt + 45) / 90) * 100;
+          let tCurr = ((t + 45) / 90) * 100;
+          
+          let dist = Math.sqrt(Math.pow(d - p.depth, 2) + Math.pow(tCurr - tNorm, 2));
+          
+          if (dist < minDist) {
+            minDist = dist;
+            bestMatch = p;
+          }
+        });
+
+        if (bestMatch) {
+          particleName.textContent = `Match: ${bestMatch.name}`;
+          particleName.style.color = '#059669'; // Green for match
+          
+          // Draw Guide Markers
+          drawGuide(bestMatch);
+        } else {
+          particleName.textContent = "Unknown Particle";
+          particleName.style.color = '#2563eb';
+          depthMarkersDiv.innerHTML = '';
+          tiltMarkersDiv.innerHTML = '';
+        }
       }
+
+      function drawGuide(p) {
+        // Draw marker on Tilt slider (horizontal line)
+        // Tilt range -45 to 45. Map to 0-100% width
+        let tiltPercent = ((p.tilt + 45) / 90) * 100;
+        tiltMarkersDiv.innerHTML = `<div style="position:absolute; left:${tiltPercent}%; top:-5px; width:2px; height:20px; background:#f59e0b; z-index:10;"></div>`;
+
+        // Draw marker on Depth slider (vertical line)
+        // Depth range 0 to 100
+        let depthPercent = (p.depth / 100) * 100;
+        depthMarkersDiv.innerHTML = `<div style="position:absolute; left:${depthPercent}%; top:-5px; width:2px; height:20px; background:#f59e0b; z-index:10;"></div>`;
+      }
+
       depthSlider.addEventListener('input', updatePreview);
       tiltSlider.addEventListener('input', updatePreview);
 
@@ -154,15 +212,24 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
         // Draw Particles
         placedParticles.forEach(p => {
-          // Map coordinates: X = Tilt (-45 to 45) -> (0 to w)
-          // Y = Depth (0 to 100) -> (h to 0)
           const x = (p.tilt / 45) * (w/2) + (w/2);
           const y = h - (p.depth / 100) * h;
           
-          mapCtx.fillStyle = getChargeColor(p.tilt);
+          // Determine if Antimatter (Tilt > 0 is positive charge, often antimatter counterpart in this view)
+          // Or simply use the flag we added
+          const isAnti = p.isAnti;
+          
+          mapCtx.fillStyle = isAnti ? '#ef4444' : getChargeColor(p.tilt);
           mapCtx.beginPath();
           mapCtx.arc(x, y, 6, 0, Math.PI*2);
           mapCtx.fill();
+          
+          // Glow for antimatter
+          if(isAnti) {
+            mapCtx.strokeStyle = '#ef4444';
+            mapCtx.lineWidth = 2;
+            mapCtx.stroke();
+          }
           
           // Label
           mapCtx.fillStyle = '#e2e8f0';
@@ -172,11 +239,25 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       }
 
       buildBtn.addEventListener('click', () => {
+        const d = parseInt(depthSlider.value);
+        const t = parseInt(tiltSlider.value);
+        
+        // Add Matter
         placedParticles.push({
-          depth: parseInt(depthSlider.value),
-          tilt: parseInt(tiltSlider.value),
-          label: `P-${placedParticles.length + 1}`
+          depth: d,
+          tilt: t,
+          label: `Particle-${placedParticles.length+1}`,
+          isAnti: false
         });
+        
+        // Add Antimatter Mirror
+        placedParticles.push({
+          depth: d,
+          tilt: -t, // Mirrored Tilt
+          label: `Anti-${placedParticles.length+1}`,
+          isAnti: true
+        });
+        
         drawMap();
       });
 
@@ -185,27 +266,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         drawMap();
       });
 
-      // Preset Buttons
-      document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          depthSlider.value = btn.dataset.d;
-          tiltSlider.value = btn.dataset.t;
-          updatePreview();
-          placedParticles.push({
-            depth: parseInt(btn.dataset.d),
-            tilt: parseInt(btn.dataset.t),
-            label: btn.textContent
-          });
-          drawMap();
-        });
-      });
-
       resizeMapCanvas();
 
       // --- ENTANGLEMENT CANVAS SETUP ---
       const entCanvas = document.getElementById('entanglementCanvas');
       const entCtx = entCanvas.getContext('2d');
       const measureBtn = document.getElementById('measureBtn');
+      const entStatus = document.getElementById('entStatus');
       
       function resizeEntCanvas() {
         const rect = entCanvas.getBoundingClientRect();
@@ -217,35 +284,50 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       }
       window.addEventListener('resize', resizeEntCanvas);
 
-      let entState = 'idle'; // idle, measuring, resolved
-      let measureTime = 0;
+      let entState = 'superposition'; // superposition, measuring, measured
+      let measureProgress = 0;
 
       function drawEntanglement() {
         const w = entCanvas.logicalW || 800;
         const h = entCanvas.logicalH || 200;
         entCtx.clearRect(0, 0, w, h);
 
-        const cx1 = w * 0.3;
-        const cx2 = w * 0.7;
+        const cx1 = w * 0.35;
+        const cx2 = w * 0.65;
         const cy = h / 2;
 
-        // Flow Line (Continuous, never cuts)
-        entCtx.strokeStyle = entState === 'resolved' ? '#10b981' : '#3b82f6';
-        entCtx.lineWidth = 3;
-        entCtx.setLineDash([5, 5]);
-        entCtx.beginPath();
-        entCtx.moveTo(cx1, cy);
-        // Sine wave between them
-        for(let x = cx1; x <= cx2; x += 5) {
-          const progress = (x - cx1) / (cx2 - cx1);
-          const y = cy + Math.sin(progress * 6 + Date.now() * 0.002) * 15;
-          entCtx.lineTo(x, y);
+        // Particle Positions (move slightly apart when measured)
+        let p1x = cx1, p2x = cx2;
+        if (entState === 'measured') {
+          p1x -= 10; p2x += 10;
         }
-        entCtx.stroke();
-        entCtx.setLineDash([]);
 
-        // Particles
-        const drawParticle = (cx, cy, spinUp) => {
+        // 1. Draw Connection Beam
+        if (entState !== 'measured') {
+          entCtx.strokeStyle = '#3b82f6';
+          entCtx.lineWidth = 4;
+          entCtx.beginPath();
+          entCtx.moveTo(p1x, cy);
+          entCtx.lineTo(p2x, cy);
+          entCtx.stroke();
+        } else {
+          // Measured: Beam is cut, outer segments remain
+          entCtx.strokeStyle = '#3b82f6';
+          entCtx.lineWidth = 4;
+          // Left Segment
+          entCtx.beginPath();
+          entCtx.moveTo(0, cy);
+          entCtx.lineTo(p1x, cy);
+          entCtx.stroke();
+          // Right Segment
+          entCtx.beginPath();
+          entCtx.moveTo(p2x, cy);
+          entCtx.lineTo(w, cy);
+          entCtx.stroke();
+        }
+
+        // 2. Draw Particles
+        const drawParticle = (cx, cy, spinUp, isMeasured) => {
           entCtx.fillStyle = '#e2e8f0';
           entCtx.beginPath();
           entCtx.arc(cx, cy, 15, 0, Math.PI*2);
@@ -253,58 +335,85 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           
           // Spin Arrow
           entCtx.strokeStyle = '#0f172a';
-          entCtx.lineWidth = 2;
+          entCtx.lineWidth = 3;
           entCtx.beginPath();
           entCtx.moveTo(cx, cy + 8);
           entCtx.lineTo(cx, cy - 8);
           entCtx.stroke();
           entCtx.beginPath();
-          entCtx.moveTo(cx - 4, cy - 4);
+          entCtx.moveTo(cx - 5, cy - 4);
           entCtx.lineTo(cx, cy - 8);
-          entCtx.lineTo(cx + 4, cy - 4);
+          entCtx.lineTo(cx + 5, cy - 4);
           entCtx.stroke();
           
           if (spinUp) {
             entCtx.fillStyle = '#ef4444';
-            entCtx.fillText('↑', cx - 4, cy - 12);
+            entCtx.fillText('↑', cx - 5, cy - 15);
           } else {
             entCtx.fillStyle = '#3b82f6';
-            entCtx.fillText('↓', cx - 4, cy + 16);
+            entCtx.fillText('↓', cx - 5, cy + 20);
           }
         };
 
-        // Initial state: random/fluctuating
-        let s1 = true, s2 = false;
-        if (entState === 'resolved') {
-          s1 = true; s2 = false; // Locked correlation
+        let s1 = true, s2 = true; // Same spin in superposition
+        if (entState === 'measured') {
+          s1 = true; s2 = false; // Mirror spins
         }
 
-        drawParticle(cx1, cy, s1);
-        drawParticle(cx2, cy, s2);
+        drawParticle(p1x, cy, s1, entState === 'measured');
+        drawParticle(p2x, cy, s2, entState === 'measured');
 
-        // Measurement Flash
+        // 3. Measurement Line (Intersecting the beam)
         if (entState === 'measuring') {
-          entCtx.fillStyle = `rgba(245, 158, 11, ${0.5 + Math.sin(Date.now() * 0.01) * 0.5})`;
-          entCtx.fillRect(0, 0, w, h);
-          entCtx.fillStyle = '#f59e0b';
-          entCtx.font = 'bold 14px sans-serif';
-          entCtx.fillText('MEASURING...', w/2 - 40, h/2);
+          const lineX = p1x + (measureProgress * (p2x - p1x));
+          entCtx.strokeStyle = '#f59e0b';
+          entCtx.lineWidth = 4;
+          entCtx.setLineDash([5, 5]);
+          entCtx.beginPath();
+          entCtx.moveTo(lineX, 0);
+          entCtx.lineTo(lineX, h);
+          entCtx.stroke();
+          entCtx.setLineDash([]);
+        } else if (entState === 'measured') {
+           // Show the "Cut" mark
+           const cutX = (p1x + p2x) / 2;
+           entCtx.fillStyle = '#f59e0b';
+           entCtx.font = 'bold 20px sans-serif';
+           entCtx.fillText('⚡', cutX - 10, cy - 20);
         }
       }
 
       measureBtn.addEventListener('click', () => {
-        if (entState === 'idle') {
+        if (entState === 'superposition') {
           entState = 'measuring';
           measureBtn.disabled = true;
-          measureBtn.textContent = 'Resolving...';
-          setTimeout(() => {
-            entState = 'resolved';
-            measureBtn.disabled = false;
-            measureBtn.textContent = 'Reset Measurement';
-          }, 1200);
+          measureBtn.textContent = 'Measuring...';
+          entStatus.textContent = "System: Intersecting Flowline...";
+          entStatus.style.color = "#f59e0b";
+          
+          // Animate the measurement line
+          let prog = 0;
+          const interval = setInterval(() => {
+            prog += 0.05;
+            measureProgress = prog;
+            drawEntanglement();
+            if (prog >= 1) {
+              clearInterval(interval);
+              entState = 'measured';
+              measureBtn.disabled = false;
+              measureBtn.textContent = 'Reset System';
+              entStatus.textContent = "System: Measured (Mirror View Locked)";
+              entStatus.style.color = "#3b82f6";
+              drawEntanglement();
+            }
+          }, 30);
         } else {
-          entState = 'idle';
-          measureBtn.textContent = 'Measure State';
+          entState = 'superposition';
+          measureProgress = 0;
+          measureBtn.textContent = '🔍 Intersect Flowline (Measure)';
+          entStatus.textContent = "System: Superposition (Connected)";
+          entStatus.style.color = "#94a3b8";
+          drawEntanglement();
         }
       });
 
