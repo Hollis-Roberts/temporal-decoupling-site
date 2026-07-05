@@ -1,277 +1,415 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Temporal Pulse Propulsion" description="Interactive simulation comparing standard thrust with temporal pulse mechanics.">
-  <article style="padding: 2rem 1rem; max-width: 900px; margin: 0 auto;">
-    <h1 style="text-align: center; margin-bottom: 0.5rem;">Temporal Pulse Propulsion</h1>
-    <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
-      Compare standard continuous thrust with Temporal Pulse mechanics. Notice how pulse cycling resets temporal resistance, allowing efficient approach to light speed.
-    </p>
+<BaseLayout title="Interactive Particle Simulator" description="Build particles using V7 Dual-Dial Topology and observe entanglement mechanics.">
+  <style>
+    .simulator-layout { display: flex; gap: 1.5rem; }
+    @media (max-width: 768px) {
+      .simulator-layout { flex-direction: column-reverse !important; }
+      .simulator-map-container { height: 280px !important; }
+      .simulator-controls { padding: 1rem !important; }
+      .simulator-wrapper { gap: 1rem !important; }
+    }
+  </style>
+  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 1100px; margin: 0 auto;">
+    <h1>Interactive Particle Topology</h1>
+    <p class="lead">Align <strong>Intersection Depth</strong> (Mass) and <strong>Intersection Tilt</strong> (Charge). The system automatically identifies known particles and plots them on the topology map.</p>
 
-    <div style="position: relative; background: #0f172a; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.3); border: 1px solid #1e293b;">
-      
-      <!-- Top UI Layer -->
-      <div style="position: absolute; top: 0; left: 0; right: 0; padding: 1rem; display: flex; gap: 1rem; z-index: 10; pointer-events: none;">
-        <div style="flex: 1;">
-          <div style="display: flex; justify-content: space-between; color: #94a3b8; font-size: 0.8rem; margin-bottom: 0.25rem;">
-            <span>Velocity</span>
-            <span id="speed-text">0.00% c</span>
-          </div>
-          <div style="height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden;">
-            <div id="speed-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); transition: width 0.1s;"></div>
+    <div class="simulator-wrapper simulator-layout">
+      <!-- Left: Controls -->
+      <div class="simulator-controls" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; flex: 0 0 320px;">
+        <div style="text-align: center; margin-bottom: 1rem; padding: 0.75rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; min-height: 48px; display: flex; align-items: center; justify-content: center;">
+          <span id="particleNameDisplay" style="font-weight: 600; color: #2563eb; font-size: 1.1rem;">Unknown Particle</span>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.4rem; color: #334155; font-size: 0.9rem;">Intersection Depth (Mass)</label>
+          <input type="range" id="depthSlider" min="0" max="100" value="15" style="width: 100%; cursor: pointer;" />
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">
+            <span>0° (Photon)</span><span id="depthValue">15</span><span>90° (Proton)</span>
           </div>
         </div>
-        <div style="flex: 1;">
-          <div style="display: flex; justify-content: space-between; color: #94a3b8; font-size: 0.8rem; margin-bottom: 0.25rem;">
-            <span>Temporal Energy</span>
-            <span id="energy-text">100%</span>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.4rem; color: #334155; font-size: 0.9rem;">Intersection Tilt (Charge)</label>
+          <input type="range" id="tiltSlider" min="-45" max="45" value="-35" style="width: 100%; cursor: pointer;" />
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">
+            <span>-45° (Neg)</span><span id="tiltValue">-35°</span><span>+45° (Pos)</span>
           </div>
-          <div style="height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden;">
-            <div id="energy-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #34d399, #f59e0b); transition: width 0.1s;"></div>
+          <div id="lockIndicator" style="margin-top: 0.5rem; padding: 0.4rem 0.6rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; font-size: 0.8rem; color: #166534; display: none;">
+            🔒 45° Stability Lock: Dark Matter Configuration
           </div>
         </div>
-        <div style="display: flex; flex-direction: column; justify-content: center; align-items: flex-end; color: #cbd5e1; font-size: 0.85rem; min-width: 60px;">
-          <span>Drag</span>
-          <span id="drag-val" style="font-weight: bold; color: #f87171;">0.00</span>
+
+        <button id="buildBtn" style="width: 100%; padding: 0.65rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">
+          Build & Add to Map
+        </button>
+        <button id="clearBtn" style="width: 100%; padding: 0.65rem; background: #ffffff; color: #ef4444; border: 1px solid #ef4444; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Clear Map
+        </button>
+
+        <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+          <p style="margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 500; color: #0f172a;">Quick Presets</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+            <button class="preset-btn" data-d="0" data-t="0" style="padding: 0.35rem 0.7rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Photon</button>
+            <button class="preset-btn" data-d="5" data-t="0" style="padding: 0.35rem 0.7rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Neutrino</button>
+            <button class="preset-btn" data-d="15" data-t="-35" style="padding: 0.35rem 0.7rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Electron</button>
+            <button class="preset-btn" data-d="85" data-t="35" style="padding: 0.35rem 0.7rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Proton</button>
+            <button class="preset-btn" data-d="80" data-t="0" style="padding: 0.35rem 0.7rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Neutron</button>
+            <button class="preset-btn" data-d="50" data-t="45" style="padding: 0.35rem 0.7rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Dark Matter</button>
+          </div>
         </div>
       </div>
 
-      <canvas id="simCanvas" style="width: 100%; height: 400px; display: block;"></canvas>
-
-      <!-- Controls -->
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; display: flex; gap: 0.75rem; justify-content: center; background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0) 100%);">
-        <button id="mode-btn" style="padding: 0.6rem 1.2rem; background: #334155; color: #f8fafc; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s;">Standard Drive</button>
-        <button id="thrust-btn" style="padding: 0.6rem 2rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 0 15px rgba(37,99,235,0.4); transition: 0.2s; user-select: none;">
-          THRUST
-        </button>
+      <!-- Right: Particle Map -->
+      <div class="simulator-map-container" style="background: #0f172a; padding: 0.75rem; border-radius: 12px; border: 1px solid #1e293b; position: relative; flex: 1;">
+        <canvas id="particleMap" style="width: 100%; height: 450px; display: block; border-radius: 8px;"></canvas>
+        <div style="position: absolute; top: 1rem; left: 1rem; background: rgba(15, 23, 42, 0.85); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; color: #94a3b8; border: 1px solid #334155; pointer-events: none;">
+          <span style="color: #3b82f6;">●</span> Entry (Matter) &nbsp; <span style="color: #ef4444;">○</span> Exit (Antimatter)
+        </div>
       </div>
     </div>
 
-    <p style="margin-top: 1.5rem; color: #475569; font-size: 0.9rem; line-height: 1.6; text-align: center;">
-      <strong>Standard Drive:</strong> Continuous thrust fights increasing temporal drag. Energy drains steadily.<br>
-      <strong>Pulse Drive:</strong> Short, high-intensity bursts reset chronological friction. Coasting preserves momentum between pulses.
-    </p>
+    <!-- Bottom: Drive Comparison -->
+    <div style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; margin-top: 2rem;">
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+        <button id="stdDriveBtn" class="drive-btn" style="padding: 0.5rem 1.2rem; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Standard Drive</button>
+        <button id="pulseDriveBtn" class="drive-btn" style="padding: 0.5rem 1.2rem; background: #8b5cf6; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Pulse Drive</button>
+        <button id="thrustBtn" style="padding: 0.5rem 1.5rem; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 6px; font-weight: 600; cursor: pointer; user-select: none;">HOLD TO THRUST</button>
+      </div>
+      <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+        <div style="width: 200px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #475569; margin-bottom: 0.2rem;"><span>Velocity</span><span id="velText">0.00% c</span></div>
+          <div style="height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;"><div id="velBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #8b5cf6); transition: width 0.1s;"></div></div>
+        </div>
+        <div style="width: 200px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #475569; margin-bottom: 0.2rem;"><span>Temporal Energy</span><span id="energyText">100%</span></div>
+          <div style="height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;"><div id="energyBar" style="height: 100%; width: 100%; background: #10b981; transition: width 0.1s;"></div></div>
+        </div>
+      </div>
+      <canvas id="driveCanvas" style="width: 100%; height: 120px; display: block; border-radius: 8px; background: #020617; border: 1px solid #1e293b;"></canvas>
+    </div>
+
+    <!-- Bottom: Entanglement -->
+    <div style="background: #ffffff; padding: 2rem; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; margin-top: 2rem;">
+      <h3 style="margin-top: 0; color: #0f172a;">Entanglement: The Mirror View</h3>
+      <p style="color: #475569; margin-bottom: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Measurement forces a "Temporal Crease" that locks geometry across the flow line. No faster-than-light signal; just topological continuity.
+      </p>
+      <div style="background: #020617; padding: 1rem; border-radius: 12px; border: 1px solid #1e293b; display: inline-block; width: 100%; max-width: 700px;">
+        <canvas id="entanglementCanvas" style="width: 100%; height: 160px; display: block; border-radius: 8px;"></canvas>
+        <button id="measureBtn" style="margin-top: 1rem; padding: 0.5rem 1.2rem; background: #f59e0b; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          🔍 Measure State
+        </button>
+      </div>
+    </div>
   </article>
 
   <script is:inline>
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 
     function init() {
-      const canvas = document.getElementById('simCanvas');
-      const ctx = canvas.getContext('2d');
+      // --- KNOWN PARTICLE DATABASE ---
+      const KNOWN_PARTICLES = [
+        { name: "Photon", depth: 0, tilt: 0 },
+        { name: "Neutrino", depth: 5, tilt: 0 },
+        { name: "Electron", depth: 15, tilt: -35 },
+        { name: "Positron", depth: 15, tilt: 35 },
+        { name: "Proton", depth: 85, tilt: 35 },
+        { name: "Antiproton", depth: 85, tilt: -35 },
+        { name: "Neutron", depth: 80, tilt: 0 },
+        { name: "Dark Matter", depth: 50, tilt: 45 },
+        { name: "Anti-Dark Matter", depth: 50, tilt: -45 }
+      ];
+
+      // --- PARTICLE MAP SETUP ---
+      const mapCanvas = document.getElementById('particleMap');
+      const mapCtx = mapCanvas.getContext('2d');
       const dpr = window.devicePixelRatio || 1;
-      
-      // UI Elements
-      const speedBar = document.getElementById('speed-bar');
-      const speedText = document.getElementById('speed-text');
-      const energyBar = document.getElementById('energy-bar');
-      const energyText = document.getElementById('energy-text');
-      const dragVal = document.getElementById('drag-val');
-      const modeBtn = document.getElementById('mode-btn');
-      const thrustBtn = document.getElementById('thrust-btn');
+      let placedParticles = [];
+      const depthSlider = document.getElementById('depthSlider');
+      const tiltSlider = document.getElementById('tiltSlider');
+      const depthVal = document.getElementById('depthValue');
+      const tiltVal = document.getElementById('tiltValue');
+      const lockInd = document.getElementById('lockIndicator');
+      const nameDisplay = document.getElementById('particleNameDisplay');
+      const buildBtn = document.getElementById('buildBtn');
+      const clearBtn = document.getElementById('clearBtn');
 
-      // Physics State
-      let velocity = 0; // 0 to 1 (1 = c)
-      let energy = 100;
-      let maxEnergy = 100;
-      let isThrusting = false;
-      let driveMode = 'standard'; // 'standard' | 'pulse'
-      let pulseTimer = 0;
-      let pulseCooldown = 0;
-      
-      // Constants
-      const ACCEL_STANDARD = 0.0008;
-      const ACCEL_PULSE = 0.006;
-      const PULSE_DURATION = 50; // frames
-      const PULSE_COOLDOWN = 40; // frames
-      const DRAG_COEFF = 0.002;
-      const ENERGY_DRAIN_STD = 0.15;
-      const ENERGY_DRAIN_PULSE = 0.8;
-      const ENERGY_REGEN = 0.08;
-
-      // Visual State
-      let stars = [];
-      let gridOffset = 0;
-      let shipX = 0;
-      let trail = [];
-
-      function resize() {
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        shipX = rect.width * 0.2;
-        
-        // Init stars if empty
-        if (stars.length === 0) {
-          for(let i=0; i<120; i++) {
-            stars.push({
-              x: Math.random() * rect.width,
-              y: Math.random() * rect.height,
-              size: Math.random() * 1.5 + 0.5,
-              speed: Math.random() * 0.5 + 0.2
-            });
+      function getClosestParticle(d, t) {
+        let best = null;
+        let minDist = 25;
+        for (const p of KNOWN_PARTICLES) {
+          const dist = Math.sqrt(Math.pow(d - p.depth, 2) + Math.pow((t - p.tilt) * 0.6, 2));
+          if (dist < minDist) {
+            minDist = dist;
+            best = p;
           }
         }
+        return best;
       }
-      window.addEventListener('resize', resize);
-      resize();
 
-      // Controls
-      modeBtn.addEventListener('click', () => {
-        driveMode = driveMode === 'standard' ? 'pulse' : 'standard';
-        modeBtn.textContent = driveMode === 'standard' ? 'Standard Drive' : 'Pulse Drive';
-        modeBtn.style.background = driveMode === 'standard' ? '#334155' : '#7c3aed';
-        pulseTimer = 0;
-        pulseCooldown = 0;
+      function updatePreview() {
+        const d = parseInt(depthSlider.value);
+        const t = parseInt(tiltSlider.value);
+        depthVal.textContent = d;
+        tiltVal.textContent = t + '°';
+        lockInd.style.display = Math.abs(t) === 45 ? 'block' : 'none';
+        
+        const match = getClosestParticle(d, t);
+        if (match) {
+          nameDisplay.textContent = `Match: ${match.name}`;
+          nameDisplay.style.color = '#059669';
+        } else {
+          nameDisplay.textContent = 'Unknown Particle';
+          nameDisplay.style.color = '#64748b';
+        }
+      }
+
+      function resizeMap() {
+        const rect = mapCanvas.getBoundingClientRect();
+        mapCanvas.width = rect.width * dpr;
+        mapCanvas.height = rect.height * dpr;
+        mapCtx.scale(dpr, dpr);
+        mapCanvas.logicalW = rect.width;
+        mapCanvas.logicalH = rect.height;
+        drawMap();
+      }
+      window.addEventListener('resize', resizeMap);
+
+      function drawMap() {
+        const w = mapCanvas.logicalW || 800;
+        const h = mapCanvas.logicalH || 450;
+        mapCtx.clearRect(0, 0, w, h);
+
+        mapCtx.strokeStyle = '#1e293b'; mapCtx.lineWidth = 1;
+        for(let i=0; i<w; i+=40) { mapCtx.beginPath(); mapCtx.moveTo(i,0); mapCtx.lineTo(i,h); mapCtx.stroke(); }
+        for(let i=0; i<h; i+=40) { mapCtx.beginPath(); mapCtx.moveTo(0,i); mapCtx.lineTo(w,i); mapCtx.stroke(); }
+
+        mapCtx.strokeStyle = '#475569'; mapCtx.lineWidth = 2;
+        mapCtx.beginPath(); mapCtx.moveTo(w/2, 0); mapCtx.lineTo(w/2, h); mapCtx.stroke();
+        mapCtx.beginPath(); mapCtx.moveTo(0, h); mapCtx.lineTo(w, h); mapCtx.stroke();
+        
+        mapCtx.fillStyle = '#94a3b8'; mapCtx.font = '11px sans-serif';
+        mapCtx.fillText('Tilt (Charge)', w/2 - 35, h - 8);
+        mapCtx.fillText('Depth (Mass)', 8, 18);
+
+        placedParticles.forEach(p => {
+          const x = (p.tilt / 45) * (w/2) + (w/2);
+          const y = h - (p.depth / 100) * h;
+          
+          if (p.isAnti) {
+            mapCtx.strokeStyle = '#ef4444'; mapCtx.lineWidth = 2;
+            mapCtx.beginPath(); mapCtx.arc(x, y, 5, 0, Math.PI*2); mapCtx.stroke();
+          } else {
+            mapCtx.fillStyle = '#3b82f6';
+            mapCtx.beginPath(); mapCtx.arc(x, y, 5, 0, Math.PI*2); mapCtx.fill();
+          }
+          mapCtx.fillStyle = '#cbd5e1'; mapCtx.font = '10px sans-serif';
+          mapCtx.fillText(p.name || p.label, x + 8, y + 3);
+        });
+      }
+
+      function addParticle(d, t, isAnti) {
+        const match = getClosestParticle(d, t);
+        placedParticles.push({
+          depth: d, tilt: t, isAnti,
+          label: isAnti ? `A-${placedParticles.length/2+1}` : `M-${placedParticles.length/2+1}`,
+          name: match ? match.name : null
+        });
+        drawMap();
+      }
+
+      buildBtn.addEventListener('click', () => {
+        addParticle(parseInt(depthSlider.value), parseInt(tiltSlider.value), false);
+        addParticle(parseInt(depthSlider.value), -parseInt(tiltSlider.value), true);
       });
 
-      function startThrust() {
+      clearBtn.addEventListener('click', () => { placedParticles = []; drawMap(); });
+
+      depthSlider.addEventListener('input', updatePreview);
+      tiltSlider.addEventListener('input', updatePreview);
+
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          depthSlider.value = btn.dataset.d;
+          tiltSlider.value = btn.dataset.t;
+          updatePreview();
+        });
+      });
+
+      resizeMap();
+
+      // --- DRIVE SIMULATION ---
+      const driveCanvas = document.getElementById('driveCanvas');
+      const driveCtx = driveCanvas.getContext('2d');
+      let driveMode = 'standard'; // standard | pulse
+      let isThrusting = false;
+      let velocity = 0, energy = 100;
+      let pulseTimer = 0, pulseCooldown = 0;
+      let stars = Array.from({length: 60}, () => ({ x: Math.random()*800, y: Math.random()*120, s: Math.random()*1.5+0.5, v: Math.random()*0.5+0.2 }));
+
+      // Balanced constants
+      const ACCEL_STD = 0.0006;
+      const ACCEL_PULSE = 0.004;
+      const PULSE_DUR = 20;
+      const PULSE_CD = 15;
+      const DRAIN_STD = 0.12;
+      const DRAIN_PULSE = 0.6;
+      const REGEN = 0.18;
+
+      function resizeDrive() {
+        const rect = driveCanvas.getBoundingClientRect();
+        driveCanvas.width = rect.width * dpr;
+        driveCanvas.height = rect.height * dpr;
+        driveCtx.scale(dpr, dpr);
+        driveCanvas.logicalW = rect.width;
+        driveCanvas.logicalH = rect.height;
+      }
+      window.addEventListener('resize', resizeDrive);
+      resizeDrive();
+
+      document.querySelectorAll('.drive-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          driveMode = btn.id === 'stdDriveBtn' ? 'standard' : 'pulse';
+          document.querySelectorAll('.drive-btn').forEach(b => b.style.opacity = '0.5');
+          btn.style.opacity = '1';
+        });
+      });
+      document.getElementById('stdDriveBtn').style.opacity = '1';
+
+      const thrustBtn = document.getElementById('thrustBtn');
+      const startThrust = () => {
         if (driveMode === 'pulse') {
-          if (pulseCooldown <= 0 && energy > 5) {
-            pulseTimer = PULSE_DURATION;
-            isThrusting = true;
-          }
-        } else {
-          isThrusting = true;
-        }
-      }
-      function stopThrust() { isThrusting = false; }
+          if (pulseCooldown <= 0 && energy > 5) { isThrusting = true; pulseTimer = PULSE_DUR; pulseCooldown = PULSE_CD; }
+        } else { isThrusting = true; }
+      };
+      const stopThrust = () => isThrusting = false;
+      thrustBtn.addEventListener('mousedown', startThrust); thrustBtn.addEventListener('mouseup', stopThrust); thrustBtn.addEventListener('mouseleave', stopThrust);
+      thrustBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startThrust(); }); thrustBtn.addEventListener('touchend', stopThrust);
 
-      thrustBtn.addEventListener('mousedown', startThrust);
-      thrustBtn.addEventListener('mouseup', stopThrust);
-      thrustBtn.addEventListener('mouseleave', stopThrust);
-      thrustBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startThrust(); });
-      thrustBtn.addEventListener('touchend', stopThrust);
-
-      // Physics & Render Loop
-      function update() {
-        const w = canvas.width / dpr;
-        const h = canvas.height / dpr;
-
-        // Drag calculation
-        const drag = DRAG_COEFF * velocity * velocity;
-        dragVal.textContent = drag.toFixed(3);
-
-        // Energy & Thrust
+      function updateDrive() {
+        const w = driveCanvas.logicalW || 700;
+        const h = driveCanvas.logicalH || 120;
+        const drag = 0.0015 * velocity * velocity;
         if (isThrusting && energy > 0) {
-          let accel = driveMode === 'pulse' ? ACCEL_PULSE : ACCEL_STANDARD;
-          let drain = driveMode === 'pulse' ? ENERGY_DRAIN_PULSE : ENERGY_DRAIN_STD;
-          
-          if (driveMode === 'pulse') {
-            pulseTimer--;
-            pulseCooldown = PULSE_COOLDOWN;
-            if (pulseTimer <= 0) {
-              isThrusting = false;
-            }
-          }
-          
-          velocity += accel;
-          energy -= drain;
+          const acc = driveMode === 'pulse' ? ACCEL_PULSE : ACCEL_STD;
+          const drain = driveMode === 'pulse' ? DRAIN_PULSE : DRAIN_STD;
+          if (driveMode === 'pulse') { pulseTimer--; if(pulseTimer<=0) isThrusting=false; }
+          velocity += acc; energy -= drain;
         } else {
-          if (energy < maxEnergy) energy += ENERGY_REGEN;
-          if (driveMode === 'pulse' && pulseCooldown > 0) pulseCooldown--;
+          energy = Math.min(100, energy + REGEN);
+          if(driveMode==='pulse' && pulseCooldown>0) pulseCooldown--;
         }
-
-        // Apply Drag (Momentum Conservation)
-        velocity = Math.max(0, velocity - drag);
-        velocity = Math.min(1, velocity);
-        energy = Math.max(0, Math.min(maxEnergy, energy));
-
-        // Update UI
-        const pct = (velocity * 100).toFixed(1);
-        speedText.textContent = `${pct}% c`;
-        speedBar.style.width = `${pct}%`;
-        energyBar.style.width = `${energy}%`;
-        energyText.textContent = `${Math.round(energy)}%`;
+        velocity = Math.max(0, Math.min(1, velocity - drag));
         
-        // Energy bar color warning
-        energyBar.style.background = energy < 20 ? '#ef4444' : 'linear-gradient(90deg, #34d399, #f59e0b)';
+        document.getElementById('velText').textContent = (velocity*100).toFixed(2) + '% c';
+        document.getElementById('velBar').style.width = (velocity*100) + '%';
+        document.getElementById('energyText').textContent = Math.round(energy) + '%';
+        document.getElementById('energyBar').style.width = energy + '%';
+        document.getElementById('energyBar').style.background = energy < 20 ? '#ef4444' : '#10b981';
 
-        // Scroll grid & stars
-        const scrollSpeed = velocity * 12;
-        gridOffset = (gridOffset + scrollSpeed) % 40;
+        stars.forEach(s => {
+          s.x -= (s.v * velocity * 15) + 0.5;
+          if(s.x < 0) s.x = w;
+        });
+
+        driveCtx.fillStyle = '#020617'; driveCtx.fillRect(0,0,w,h);
+        driveCtx.fillStyle = '#ffffff';
+        stars.forEach(s => {
+          driveCtx.globalAlpha = 0.3 + (velocity * 0.7);
+          driveCtx.beginPath(); driveCtx.arc(s.x, s.y, s.s, 0, Math.PI*2); driveCtx.fill();
+        });
+        driveCtx.globalAlpha = 1;
         
-        stars.forEach(s => {
-          s.x -= s.speed * scrollSpeed;
-          if (s.x < 0) s.x = w;
-        });
-
-        // Trail effect
-        if (velocity > 0.01) {
-          trail.push({ x: shipX, y: h/2, alpha: 1 });
-        }
-        if (trail.length > 15) trail.shift();
-        trail.forEach(t => t.alpha -= 0.06);
-        trail = trail.filter(t => t.alpha > 0);
-
-        draw(w, h);
-        requestAnimationFrame(update);
-      }
-
-      function draw(w, h) {
-        ctx.clearRect(0, 0, w, h);
-
-        // Grid Background
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (let x = -gridOffset; x < w; x += 40) {
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, h);
-        }
-        for (let y = 0; y < h; y += 40) {
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-        }
-        ctx.stroke();
-
-        // Stars
-        ctx.fillStyle = '#ffffff';
-        stars.forEach(s => {
-          ctx.globalAlpha = s.speed * 0.8;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-          ctx.fill();
-        });
-        ctx.globalAlpha = 1;
-
-        // Trail
-        trail.forEach((t, i) => {
-          const width = 20 * (1 - i/trail.length) * velocity;
-          ctx.fillStyle = driveMode === 'pulse' ? `rgba(139, 92, 246, ${t.alpha})` : `rgba(56, 189, 248, ${t.alpha})`;
-          ctx.beginPath();
-          ctx.ellipse(t.x - (15-i)*3, t.y, width, 4, 0, 0, Math.PI*2);
-          ctx.fill();
-        });
-
         // Ship
-        ctx.fillStyle = '#f8fafc';
-        ctx.beginPath();
-        ctx.moveTo(shipX + 20, h/2);
-        ctx.lineTo(shipX - 10, h/2 - 12);
-        ctx.lineTo(shipX - 10, h/2 + 12);
-        ctx.closePath();
-        ctx.fill();
-
-        // Engine Glow
-        if (isThrusting && energy > 0) {
-          const glowSize = 10 + Math.random() * 8 + (velocity * 20);
-          const grad = ctx.createRadialGradient(shipX - 12, h/2, 0, shipX - 12, h/2, glowSize);
-          grad.addColorStop(0, driveMode === 'pulse' ? '#a78bfa' : '#38bdf8');
+        const shipX = w * 0.2;
+        driveCtx.fillStyle = '#e2e8f0';
+        driveCtx.beginPath(); driveCtx.moveTo(shipX+15, h/2); driveCtx.lineTo(shipX-10, h/2-8); driveCtx.lineTo(shipX-10, h/2+8); driveCtx.closePath(); driveCtx.fill();
+        
+        if(isThrusting && energy > 0) {
+          const glow = 8 + (velocity*15) + (driveMode==='pulse' ? 10 : 0);
+          const grad = driveCtx.createRadialGradient(shipX-10, h/2, 0, shipX-10, h/2, glow);
+          grad.addColorStop(0, driveMode==='pulse' ? '#8b5cf6' : '#38bdf8');
           grad.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(shipX - 12, h/2, glowSize, 0, Math.PI*2);
-          ctx.fill();
+          driveCtx.fillStyle = grad;
+          driveCtx.beginPath(); driveCtx.arc(shipX-10, h/2, glow, 0, Math.PI*2); driveCtx.fill();
+        }
+        requestAnimationFrame(updateDrive);
+      }
+      updateDrive();
+
+      // --- ENTANGLEMENT (UNCHANGED) ---
+      const entCanvas = document.getElementById('entanglementCanvas');
+      const entCtx = entCanvas.getContext('2d');
+      const measureBtn = document.getElementById('measureBtn');
+      let entState = 'superposition', measureProgress = 0;
+
+      function resizeEnt() {
+        const rect = entCanvas.getBoundingClientRect();
+        entCanvas.width = rect.width * dpr;
+        entCanvas.height = rect.height * dpr;
+        entCtx.scale(dpr, dpr);
+        entCanvas.logicalW = rect.width;
+        entCanvas.logicalH = rect.height;
+      }
+      window.addEventListener('resize', resizeEnt);
+      resizeEnt();
+
+      function drawEnt() {
+        const w = entCanvas.logicalW || 600;
+        const h = entCanvas.logicalH || 160;
+        entCtx.clearRect(0, 0, w, h);
+        const cx1 = w*0.35, cx2 = w*0.65, cy = h/2;
+        let p1x = cx1, p2x = cx2;
+        if(entState==='measured') { p1x-=10; p2x+=10; }
+
+        entCtx.strokeStyle = entState==='measured' ? '#10b981' : '#3b82f6';
+        entCtx.lineWidth = 3;
+        if(entState!=='measured') {
+          entCtx.beginPath(); entCtx.moveTo(p1x, cy); entCtx.lineTo(p2x, cy); entCtx.stroke();
+        } else {
+          entCtx.beginPath(); entCtx.moveTo(0, cy); entCtx.lineTo(p1x, cy); entCtx.stroke();
+          entCtx.beginPath(); entCtx.moveTo(p2x, cy); entCtx.lineTo(w, cy); entCtx.stroke();
+        }
+
+        const drawParticle = (x, y, up) => {
+          entCtx.fillStyle = '#ffffff';
+          entCtx.beginPath(); entCtx.arc(x, y, 12, 0, Math.PI*2); entCtx.fill();
+          entCtx.strokeStyle = up ? '#ef4444' : '#3b82f6'; entCtx.lineWidth = 2;
+          entCtx.beginPath();
+          if(up) { entCtx.moveTo(x, y+6); entCtx.lineTo(x, y-6); entCtx.stroke(); entCtx.beginPath(); entCtx.moveTo(x-3, y-2); entCtx.lineTo(x, y-6); entCtx.lineTo(x+3, y-2); }
+          else { entCtx.moveTo(x, y-6); entCtx.lineTo(x, y+6); entCtx.stroke(); entCtx.beginPath(); entCtx.moveTo(x-3, y+2); entCtx.lineTo(x, y+6); entCtx.lineTo(x+3, y+2); }
+          entCtx.stroke();
+        };
+
+        let s1 = true, s2 = true;
+        if(entState==='measured') { s1 = true; s2 = false; }
+        drawParticle(p1x, cy, s1); drawParticle(p2x, cy, s2);
+
+        if(entState==='measuring') {
+          const lineX = p1x + (measureProgress*(p2x-p1x));
+          entCtx.strokeStyle = '#f59e0b'; entCtx.lineWidth = 2; entCtx.setLineDash([4,4]);
+          entCtx.beginPath(); entCtx.moveTo(lineX, 0); entCtx.lineTo(lineX, h); entCtx.stroke(); entCtx.setLineDash([]);
+        } else if(entState==='measured') {
+          entCtx.fillStyle = '#f59e0b'; entCtx.font = '16px sans-serif';
+          entCtx.fillText('⚡', (p1x+p2x)/2 - 8, cy - 15);
         }
       }
 
-      update();
+      measureBtn.addEventListener('click', () => {
+        if(entState==='superposition') {
+          entState='measuring'; measureBtn.disabled=true; measureBtn.textContent='Measuring...';
+          let prog=0;
+          const iv = setInterval(()=>{ prog+=0.04; measureProgress=prog; drawEnt();
+            if(prog>=1){ clearInterval(iv); entState='measured'; measureBtn.disabled=false; measureBtn.textContent='Reset System'; }
+          }, 25);
+        } else { entState='superposition'; measureProgress=0; measureBtn.textContent='🔍 Measure State'; }
+      });
+
+      function animEnt() { drawEnt(); requestAnimationFrame(animEnt); }
+      animEnt();
     }
   </script>
 </BaseLayout>
