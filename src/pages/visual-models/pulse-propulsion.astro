@@ -1,35 +1,56 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Pulse Propulsion" description="How to approach light speed using Temporal Decoupling.">
-  <article class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 900px; margin: 0 auto;">
-    <h1>Temporal Pulse Propulsion</h1>
-    <p class="lead">Standard physics says the energy required to reach light speed is infinite. <strong>Temporal Decoupling</strong> explains why: Light speed is not just a velocity; it is the boundary between our Timeline and the Timeless Sea (TSC). Crossing it requires infinite energy to overcome the temporal pressure gradient.</p>
+<BaseLayout title="Temporal Pulse Propulsion" description="Interactive simulation comparing standard thrust with temporal pulse mechanics.">
+  <article style="padding: 2rem 1rem; max-width: 900px; margin: 0 auto;">
+    <h1 style="text-align: center; margin-bottom: 0.5rem;">Temporal Pulse Propulsion</h1>
+    <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
+      Compare standard continuous thrust with Temporal Pulse mechanics. Notice how pulse cycling resets temporal resistance, allowing efficient approach to light speed.
+    </p>
 
-    <!-- Interactive Simulation -->
-    <div style="background: #020617; padding: 1rem; border-radius: 16px; margin: 2rem 0; text-align: center; border: 1px solid #1e293b;">
-      <canvas id="pulseCanvas" width="800" height="400" style="display: block; width: 100%; max-width: 800px; height: 400px; border-radius: 8px; margin: 0 auto;"></canvas>
+    <div style="position: relative; background: #0f172a; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.3); border: 1px solid #1e293b;">
       
-      <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-        <button id="btnStandard" style="padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">Standard Drive</button>
-        <button id="btnPulse" style="padding: 0.5rem 1rem; background: #2563EB; color: white; border: none; cursor: pointer; border-radius: 4px;">Pulse Drive (Theory)</button>
-        <button id="btnReset" style="padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">Reset</button>
+      <!-- Top UI Layer -->
+      <div style="position: absolute; top: 0; left: 0; right: 0; padding: 1rem; display: flex; gap: 1rem; z-index: 10; pointer-events: none;">
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; color: #94a3b8; font-size: 0.8rem; margin-bottom: 0.25rem;">
+            <span>Velocity</span>
+            <span id="speed-text">0.00% c</span>
+          </div>
+          <div style="height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden;">
+            <div id="speed-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); transition: width 0.1s;"></div>
+          </div>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; color: #94a3b8; font-size: 0.8rem; margin-bottom: 0.25rem;">
+            <span>Temporal Energy</span>
+            <span id="energy-text">100%</span>
+          </div>
+          <div style="height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden;">
+            <div id="energy-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #34d399, #f59e0b); transition: width 0.1s;"></div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: flex-end; color: #cbd5e1; font-size: 0.85rem; min-width: 60px;">
+          <span>Drag</span>
+          <span id="drag-val" style="font-weight: bold; color: #f87171;">0.00</span>
+        </div>
       </div>
-      
-      <p id="statusText" style="color: #94a3b8; margin-top: 1rem; font-size: 0.9rem; min-height: 1.5em; padding: 0 1rem;">Select a drive mode to visualize temporal pressure.</p>
+
+      <canvas id="simCanvas" style="width: 100%; height: 400px; display: block;"></canvas>
+
+      <!-- Controls -->
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; display: flex; gap: 0.75rem; justify-content: center; background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0) 100%);">
+        <button id="mode-btn" style="padding: 0.6rem 1.2rem; background: #334155; color: #f8fafc; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s;">Standard Drive</button>
+        <button id="thrust-btn" style="padding: 0.6rem 2rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 0 15px rgba(37,99,235,0.4); transition: 0.2s; user-select: none;">
+          THRUST
+        </button>
+      </div>
     </div>
 
-    <h2>The Mechanic: Temporal Pressure & The Boundary</h2>
-    <p>In this model, acceleration does not just increase speed; it increases <strong>Temporal Pressure</strong>. As the ship pushes against the flowline, it creates a "bulge" of resistance (visualized as the darkening blue gradient).</p>
-    
-    <ul>
-      <li><strong>The Gradient Bulge:</strong> Mass creates drag on the timeline. Acceleration intensifies this drag, compressing the temporal field around the ship. The darker the blue, the higher the energy cost to maintain thrust.</li>
-      <li><strong>Pulse Coasting:</strong> By stopping acceleration, the ship decouples from the active push. The temporal pressure dissipates (gradient fades), allowing the ship to conserve energy while maintaining momentum through space.</li>
-      <li><strong>The Light Speed Barrier:</strong> Represented by the black vertical bar. As velocity approaches <em>c</em>, the temporal pressure becomes infinite. To cross this barrier would require leaving our timeline entirely, entering the TSC where the momentum difference could dismantle physical matter.</li>
-    </ul>
-
-    <h3>Why Earth Launch Requires So Much Power</h3>
-    <p>This visualization also explains planetary launch. The Earth itself has a massive temporal bulge (gravity). To leave Earth, a ship must overcome both its own temporal drag AND the Earth's deep temporal well. The combined gradients create an immense energy threshold just to reach orbit.</p>
+    <p style="margin-top: 1.5rem; color: #475569; font-size: 0.9rem; line-height: 1.6; text-align: center;">
+      <strong>Standard Drive:</strong> Continuous thrust fights increasing temporal drag. Energy drains steadily.<br>
+      <strong>Pulse Drive:</strong> Short, high-intensity bursts reset chronological friction. Coasting preserves momentum between pulses.
+    </p>
   </article>
 
   <script is:inline>
@@ -40,231 +61,217 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     }
 
     function init() {
-      const canvas = document.getElementById('pulseCanvas');
-      if (!canvas) return;
+      const canvas = document.getElementById('simCanvas');
       const ctx = canvas.getContext('2d');
-      const btnStandard = document.getElementById('btnStandard');
-      const btnPulse = document.getElementById('btnPulse');
-      const btnReset = document.getElementById('btnReset');
-      const statusText = document.getElementById('statusText');
-
-      let animationId;
-      let mode = 'none';
-      let velocity = 0;
-      let pressure = 0; // 0 to 1 (represents gradient darkness)
-      let distance = 0; // Simulated distance for stars
-      let energy = 100;
+      const dpr = window.devicePixelRatio || 1;
       
-      // Starfield
-      const stars = [];
-      const numStars = 150;
-      for(let i=0; i<numStars; i++) {
-        stars.push({
-          x: Math.random() * 800,
-          y: Math.random() * 400,
-          size: Math.random() * 2 + 0.5,
-          speed: Math.random() * 0.5 + 0.1
-        });
-      }
+      // UI Elements
+      const speedBar = document.getElementById('speed-bar');
+      const speedText = document.getElementById('speed-text');
+      const energyBar = document.getElementById('energy-bar');
+      const energyText = document.getElementById('energy-text');
+      const dragVal = document.getElementById('drag-val');
+      const modeBtn = document.getElementById('mode-btn');
+      const thrustBtn = document.getElementById('thrust-btn');
 
-      // Tuning
-      const MAX_SPEED = 5.0;
-      const BARRIER_POS = 700; // X position of the black bar
+      // Physics State
+      let velocity = 0; // 0 to 1 (1 = c)
+      let energy = 100;
+      let maxEnergy = 100;
+      let isThrusting = false;
+      let driveMode = 'standard'; // 'standard' | 'pulse'
+      let pulseTimer = 0;
+      let pulseCooldown = 0;
+      
+      // Constants
+      const ACCEL_STANDARD = 0.0008;
+      const ACCEL_PULSE = 0.006;
+      const PULSE_DURATION = 50; // frames
+      const PULSE_COOLDOWN = 40; // frames
+      const DRAG_COEFF = 0.002;
+      const ENERGY_DRAIN_STD = 0.15;
+      const ENERGY_DRAIN_PULSE = 0.8;
+      const ENERGY_REGEN = 0.08;
 
-      function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
+      // Visual State
+      let stars = [];
+      let gridOffset = 0;
+      let shipX = 0;
+      let trail = [];
+
+      function resize() {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
-        canvas.logicalWidth = rect.width;
-        canvas.logicalHeight = rect.height;
-      }
-
-      function draw() {
-        const w = canvas.logicalWidth || 800;
-        const h = canvas.logicalHeight || 400;
+        shipX = rect.width * 0.2;
         
-        // 1. Background Gradient (Temporal Pressure)
-        // Interpolate color based on pressure
-        // Low pressure: Light Blue (#3b82f6) -> Transparent
-        // High pressure: Dark Blue (#0f172a) -> Black (#000000)
-        
-        const r = 15 - (pressure * 15);
-        const g = 23 - (pressure * 23);
-        const b = 42 - (pressure * 42);
-        
-        const grad = ctx.createLinearGradient(0, 0, w, 0);
-        grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`); // Left side (Ship area)
-        grad.addColorStop(1, '#020617'); // Right side (Deep space/TSC)
-        
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
-
-        // 2. Stars with Motion Blur
-        ctx.fillStyle = '#ffffff';
-        stars.forEach(star => {
-          // Move stars left based on velocity
-          star.x -= star.speed * (velocity * 2);
-          if (star.x < 0) star.x += w;
-
-          // Draw streak if moving fast
-          if (velocity > 1) {
-            ctx.globalAlpha = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(star.x, star.y);
-            ctx.lineTo(star.x + (velocity * 10), star.y);
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = star.size / 2;
-            ctx.stroke();
-            ctx.globalAlpha = 1.0;
-          } else {
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.size, 0, Math.PI*2);
-            ctx.fill();
+        // Init stars if empty
+        if (stars.length === 0) {
+          for(let i=0; i<120; i++) {
+            stars.push({
+              x: Math.random() * rect.width,
+              y: Math.random() * rect.height,
+              size: Math.random() * 1.5 + 0.5,
+              speed: Math.random() * 0.5 + 0.2
+            });
           }
+        }
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      // Controls
+      modeBtn.addEventListener('click', () => {
+        driveMode = driveMode === 'standard' ? 'pulse' : 'standard';
+        modeBtn.textContent = driveMode === 'standard' ? 'Standard Drive' : 'Pulse Drive';
+        modeBtn.style.background = driveMode === 'standard' ? '#334155' : '#7c3aed';
+        pulseTimer = 0;
+        pulseCooldown = 0;
+      });
+
+      function startThrust() {
+        if (driveMode === 'pulse') {
+          if (pulseCooldown <= 0 && energy > 5) {
+            pulseTimer = PULSE_DURATION;
+            isThrusting = true;
+          }
+        } else {
+          isThrusting = true;
+        }
+      }
+      function stopThrust() { isThrusting = false; }
+
+      thrustBtn.addEventListener('mousedown', startThrust);
+      thrustBtn.addEventListener('mouseup', stopThrust);
+      thrustBtn.addEventListener('mouseleave', stopThrust);
+      thrustBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startThrust(); });
+      thrustBtn.addEventListener('touchend', stopThrust);
+
+      // Physics & Render Loop
+      function update() {
+        const w = canvas.width / dpr;
+        const h = canvas.height / dpr;
+
+        // Drag calculation
+        const drag = DRAG_COEFF * velocity * velocity;
+        dragVal.textContent = drag.toFixed(3);
+
+        // Energy & Thrust
+        if (isThrusting && energy > 0) {
+          let accel = driveMode === 'pulse' ? ACCEL_PULSE : ACCEL_STANDARD;
+          let drain = driveMode === 'pulse' ? ENERGY_DRAIN_PULSE : ENERGY_DRAIN_STD;
+          
+          if (driveMode === 'pulse') {
+            pulseTimer--;
+            pulseCooldown = PULSE_COOLDOWN;
+            if (pulseTimer <= 0) {
+              isThrusting = false;
+            }
+          }
+          
+          velocity += accel;
+          energy -= drain;
+        } else {
+          if (energy < maxEnergy) energy += ENERGY_REGEN;
+          if (driveMode === 'pulse' && pulseCooldown > 0) pulseCooldown--;
+        }
+
+        // Apply Drag (Momentum Conservation)
+        velocity = Math.max(0, velocity - drag);
+        velocity = Math.min(1, velocity);
+        energy = Math.max(0, Math.min(maxEnergy, energy));
+
+        // Update UI
+        const pct = (velocity * 100).toFixed(1);
+        speedText.textContent = `${pct}% c`;
+        speedBar.style.width = `${pct}%`;
+        energyBar.style.width = `${energy}%`;
+        energyText.textContent = `${Math.round(energy)}%`;
+        
+        // Energy bar color warning
+        energyBar.style.background = energy < 20 ? '#ef4444' : 'linear-gradient(90deg, #34d399, #f59e0b)';
+
+        // Scroll grid & stars
+        const scrollSpeed = velocity * 12;
+        gridOffset = (gridOffset + scrollSpeed) % 40;
+        
+        stars.forEach(s => {
+          s.x -= s.speed * scrollSpeed;
+          if (s.x < 0) s.x = w;
         });
 
-        // 3. The Ship (Fixed Position)
-        const shipX = 100;
-        const shipY = h / 2;
-        
-        // Ship Body
-        ctx.fillStyle = '#e2e8f0';
+        // Trail effect
+        if (velocity > 0.01) {
+          trail.push({ x: shipX, y: h/2, alpha: 1 });
+        }
+        if (trail.length > 15) trail.shift();
+        trail.forEach(t => t.alpha -= 0.06);
+        trail = trail.filter(t => t.alpha > 0);
+
+        draw(w, h);
+        requestAnimationFrame(update);
+      }
+
+      function draw(w, h) {
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid Background
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(shipX, shipY);
-        ctx.lineTo(shipX - 20, shipY - 10);
-        ctx.lineTo(shipX - 20, shipY + 10);
+        for (let x = -gridOffset; x < w; x += 40) {
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+        }
+        for (let y = 0; y < h; y += 40) {
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+        }
+        ctx.stroke();
+
+        // Stars
+        ctx.fillStyle = '#ffffff';
+        stars.forEach(s => {
+          ctx.globalAlpha = s.speed * 0.8;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        // Trail
+        trail.forEach((t, i) => {
+          const width = 20 * (1 - i/trail.length) * velocity;
+          ctx.fillStyle = driveMode === 'pulse' ? `rgba(139, 92, 246, ${t.alpha})` : `rgba(56, 189, 248, ${t.alpha})`;
+          ctx.beginPath();
+          ctx.ellipse(t.x - (15-i)*3, t.y, width, 4, 0, 0, Math.PI*2);
+          ctx.fill();
+        });
+
+        // Ship
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.moveTo(shipX + 20, h/2);
+        ctx.lineTo(shipX - 10, h/2 - 12);
+        ctx.lineTo(shipX - 10, h/2 + 12);
+        ctx.closePath();
         ctx.fill();
-        
-        // Engine Glow (only when pushing)
-        if ((mode === 'standard' && energy > 0) || (mode === 'pulse' && distance % 400 < 200 && energy > 0)) {
-           ctx.fillStyle = '#f59e0b';
-           ctx.beginPath();
-           ctx.moveTo(shipX - 20, shipY - 5);
-           ctx.lineTo(shipX - 35 - (velocity*2), shipY);
-           ctx.lineTo(shipX - 20, shipY + 5);
-           ctx.fill();
-        }
 
-        // 4. Light Speed Barrier (The Black Bar)
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(BARRIER_POS, 0, 20, h);
-        
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.fillText('LIGHT SPEED BARRIER', BARRIER_POS - 60, 30);
-        ctx.fillText('(TSC Boundary)', BARRIER_POS - 60, 50);
-
-        // 5. UI Bars
-        // Pressure Bar
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(20, h - 60, w - 40, 10);
-        ctx.fillStyle = pressure > 0.8 ? '#ef4444' : '#3b82f6';
-        ctx.fillRect(20, h - 60, (w - 40) * pressure, 10);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '10px sans-serif';
-        ctx.fillText('TEMPORAL PRESSURE (Drag)', 20, h - 65);
-
-        // Energy Bar
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(20, h - 30, w - 40, 10);
-        ctx.fillStyle = energy > 30 ? '#10b981' : '#ef4444';
-        ctx.fillRect(20, h - 30, (w - 40) * (energy / 100), 10);
-        ctx.fillText('SHIP ENERGY', 20, h - 35);
-      }
-
-      function update() {
-        const w = canvas.logicalWidth || 800;
-        
-        if (mode === 'standard') {
-          // Standard: Continuous push, pressure builds, energy drains
-          if (energy > 0 && velocity < MAX_SPEED * 0.9) {
-             velocity += 0.05;
-             energy -= 0.3;
-             pressure += 0.01; // Pressure builds up
-             if (pressure > 1) pressure = 1;
-             statusText.innerText = "Standard Drive: Pressure building. Energy draining rapidly.";
-             statusText.style.color = "#ef4444";
-          } else {
-             if (energy <= 0) {
-                velocity *= 0.98; // Slow down
-                pressure *= 0.95; // Pressure releases
-                statusText.innerText = "Standard Drive: Fuel depleted. Drifting.";
-             }
-          }
-        } 
-        else if (mode === 'pulse') {
-          // Pulse Logic
-          let cyclePos = distance % 400;
-          
-          if (cyclePos < 200 && energy > 0 && velocity < MAX_SPEED * 0.95) {
-             // Push Phase
-             velocity += 0.08;
-             energy -= 0.15;
-             pressure += 0.02;
-             if (pressure > 1) pressure = 1;
-             statusText.innerText = "Pulse Drive: Accelerating. Temporal pressure increasing.";
-             statusText.style.color = "#f59e0b";
-          } else {
-             // Coast Phase
-             pressure *= 0.92; // Pressure releases quickly
-             if (pressure < 0.05) pressure = 0;
-             
-             // Maintain momentum (Newton's 1st Law)
-             velocity *= 0.999; 
-             
-             // Small energy drain for systems
-             if (energy > 0) energy -= 0.05;
-             
-             statusText.innerText = "Pulse Drive: Coasting. Pressure dissipated. Momentum maintained.";
-             statusText.style.color = "#3b82f6";
-          }
-          distance += velocity;
-        }
-
-        // Cap velocity at barrier approach
-        if (velocity > MAX_SPEED * 0.98) {
-           velocity = MAX_SPEED * 0.98;
-           statusText.innerText = "WARNING: Approaching TSC Boundary. Infinite energy required to cross.";
-           statusText.style.color = "#ef4444";
-        }
-
-        draw();
-        if (mode !== 'none' || velocity > 0.1) {
-          animationId = requestAnimationFrame(update);
+        // Engine Glow
+        if (isThrusting && energy > 0) {
+          const glowSize = 10 + Math.random() * 8 + (velocity * 20);
+          const grad = ctx.createRadialGradient(shipX - 12, h/2, 0, shipX - 12, h/2, glowSize);
+          grad.addColorStop(0, driveMode === 'pulse' ? '#a78bfa' : '#38bdf8');
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(shipX - 12, h/2, glowSize, 0, Math.PI*2);
+          ctx.fill();
         }
       }
 
-      btnStandard.addEventListener('click', () => {
-        reset();
-        mode = 'standard';
-        update();
-      });
-
-      btnPulse.addEventListener('click', () => {
-        reset();
-        mode = 'pulse';
-        update();
-      });
-
-      btnReset.addEventListener('click', reset);
-
-      function reset() {
-        mode = 'none';
-        velocity = 0;
-        pressure = 0;
-        energy = 100;
-        distance = 0;
-        statusText.innerText = "Select a drive mode.";
-        statusText.style.color = "#94a3b8";
-        draw();
-        cancelAnimationFrame(animationId);
-      }
-
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-      draw();
+      update();
     }
   </script>
 </BaseLayout>
