@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://temporaldecoupling.com/sitemap-index.xml
+
+# Crawl-delay (optional)
+Crawl-delay: 1
+
+# Disallow admin areas if needed
+Disallow: /admin/
