@@ -46,5 +46,30 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   </>
 )}
 
+function getStructuredData(props, url) {
+  const baseData = {
+    "@context": "https://schema.org",
+    "@type": props.article ? "Article" : "WebPage",
+    "headline": props.title,
+    "description": props.description,
+    "url": url.href,
+    "image": props.image,
+  };
+
+  if (props.article) {
+    return {
+      ...baseData,
+      "datePublished": props.publishedTime,
+      "dateModified": props.modifiedTime,
+      "author": props.authors?.map(author => ({
+        "@type": "Person",
+        "name": author
+      }))
+    };
+  }
+
+  return baseData;
+}
+
 <!-- Structured Data -->
 <script type="application/ld+json" set:html={JSON.stringify(getStructuredData(Astro.props, canonicalURL))} />

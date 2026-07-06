@@ -16,4 +16,17 @@ export default defineConfig({
     netlify(),
     sitemap(),
   ]
+   compressHTML: true,
+  build: {
+    inlineStylesheets: 'auto',
+  },
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: false,
+      },
+    },
+  },
 });
+

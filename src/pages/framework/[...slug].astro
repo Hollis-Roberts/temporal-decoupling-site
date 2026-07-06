@@ -6,28 +6,185 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const posts = await getCollection('framework');
-  return posts.map((post) => ({
+  
+  // Sort by section number for proper ordering
+  const sorted = posts.sort((a, b) => 
+    a.data.sectionNumber - b.data.sectionNumber
+  );
+  
+  return sorted.map((post, index) => ({
     params: { slug: post.id },
-    props: { post },
+    props: { 
+      post,
+      prev: sorted[index - 1] || null,
+      next: sorted[index + 1] || null,
+    },
   }));
 }
 
-const { post } = Astro.props;
+const { post, prev, next } = Astro.props;
+
+// Generate structured data for SEO
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.subtitle,
+  author: {
+    '@type': 'Person',
+    name: 'TSC Roberts',
+  },
+  datePublished: post.data.pubDate,
+  dateModified: post.data.updatedAt || post.data.pubDate,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.site + `/framework/${post.id}/`,
+  },
+};
 ---
 
-<BaseLayout title={post.data.title} description={post.data.subtitle}>
-  <article class="container" style="max-width: 800px; margin: 0 auto; padding: 4rem 1.5rem;">
-    <span style="color: var(--color-secondary); font-weight: 600; font-size: 0.875rem;">
-      STEP {post.data.sectionNumber.toString().padStart(2, '0')}
-    </span>
-    <h1 style="margin: 0.5rem 0 0.25rem 0;">{post.data.title}</h1>
-    <p style="color: var(--color-muted); margin-bottom: 2rem; font-style: italic;">{post.data.subtitle}</p>
+<BaseLayout 
+  title={`${post.data.title} | AETT Framework`} 
+  description={post.data.subtitle}
+  canonicalUrl={`/framework/${post.id}/`}
+>
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  
+  <article class="framework-article" itemscope itemtype="https://schema.org/Article">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 2rem;">
+      <a href="/">Home</a> › 
+      <a href="/framework/">Framework</a> › 
+      <span aria-current="page">{post.data.title}</span>
+    </nav>
     
-    <!-- Render markdown body directly -->
-    <div class="prose" set:html={post.body} />
+    <header style="margin-bottom: 3rem;">
+      <span class="step-badge" style="color: var(--color-secondary); font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+        Step {post.data.sectionNumber.toString().padStart(2, '0')}
+      </span>
+      <h1 itemprop="headline" style="margin: 0.75rem 0 0.5rem 0; line-height: 1.2;">{post.data.title}</h1>
+      <p itemprop="description" style="color: var(--color-muted); margin: 0; font-size: 1.125rem; font-style: italic;">{post.data.subtitle}</p>
+      
+      <!-- Meta info -->
+      <div style="margin-top: 1.5rem; display: flex; gap: 1.5rem; color: var(--color-muted); font-size: 0.875rem;">
+        {post.data.pubDate && (
+          <time itemprop="datePublished" datetime={post.data.pubDate}>
+            Published: {new Date(post.data.pubDate).toLocaleDateString('en-GB')}
+          </time>
+        )}
+        {post.data.readingTime && (
+          <span>{post.data.readingTime} min read</span>
+        )}
+      </div>
+    </header>
     
-    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
-      <a href="/framework/" class="btn">← Back to Framework</a>
+    <!-- Table of Contents (if content has headings) -->
+    {post.data.toc && post.data.toc.length > 0 && (
+      <aside class="toc" style="background: var(--color-background-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2.5rem;">
+        <h3 style="margin: 0 0 1rem 0; font-size: 1rem;">On this page</h3>
+        <nav aria-label="Table of contents">
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+            {post.data.toc.map((item) => (
+              <li>
+                <a href={`#${item.slug}`} style="color: var(--color-text); text-decoration: none; font-size: 0.95rem;">
+                  {item.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+    )}
+    
+    <!-- Main Content -->
+    <div class="prose" itemprop="articleBody" set:html={post.body} />
+    
+    <!-- Navigation: Previous/Next -->
+    <nav class="article-navigation" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-border); display: flex; justify-content: space-between; gap: 1rem;" aria-label="Article navigation">
+      {prev && (
+        <a href={`/framework/${prev.id}/`} class="nav-link prev" style="flex: 1; text-decoration: none;">
+          <span style="display: block; color: var(--color-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">← Previous</span>
+          <span style="font-weight: 600; color: var(--color-primary);">Step {prev.data.sectionNumber}: {prev.data.title}</span>
+        </a>
+      )}
+      {next && (
+        <a href={`/framework/${next.id}/`} class="nav-link next" style="flex: 1; text-decoration: none; text-align: right;">
+          <span style="display: block; color: var(--color-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Next →</span>
+          <span style="font-weight: 600; color: var(--color-primary);">Step {next.data.sectionNumber}: {next.data.title}</span>
+        </a>
+      )}
+    </nav>
+    
+    <!-- Back to Framework link -->
+    <div style="margin-top: 2rem; text-align: center;">
+      <a href="/framework/" class="btn btn-outline">← Back to Framework Overview</a>
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  /* Prose styling for markdown content */
+  .prose {
+    line-height: 1.7;
+    color: var(--color-text);
+  }
+  .prose :is(h2, h3, h4) {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    scroll-margin-top: 2rem;
+  }
+  .prose h2 { font-size: 1.5rem; }
+  .prose h3 { font-size: 1.25rem; }
+  .prose p { margin-bottom: 1.25rem; }
+  .prose a { 
+    color: var(--color-primary); 
+    text-decoration: none; 
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .prose a:hover { border-bottom-color: var(--color-primary); }
+  .prose :is(ul, ol) { 
+    margin-bottom: 1.25rem; 
+    padding-left: 1.5rem; 
+  }
+  .prose li { margin-bottom: 0.5rem; }
+  .prose img { 
+    max-width: 100%; 
+    height: auto; 
+    border-radius: 0.5rem; 
+    margin: 1.5rem 0; 
+  }
+  .prose blockquote {
+    border-left: 4px solid var(--color-secondary);
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--color-muted);
+  }
+  .prose code {
+    background: var(--color-background-alt);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .prose pre {
+    background: var(--color-background-alt);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .article-navigation {
+      flex-direction: column;
+      text-align: left !important;
+    }
+    .nav-link.next {
+      margin-top: 1rem;
+    }
+  }
+</style>

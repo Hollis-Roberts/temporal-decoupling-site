@@ -8,4 +8,4 @@ Sitemap: https://temporaldecoupling.com/sitemap-index.xml
 Crawl-delay: 1
 
 # Disallow admin areas if needed
-Disallow: /admin/
+Disallow: /admin/ 
